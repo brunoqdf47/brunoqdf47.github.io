@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Inbox triage, automated — an AI agent that reads my email so I don't have to</title>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Inbox triage, automated — an AI agent + Power Automate"/>
+<meta property="og:description" content="A personal system that reads every incoming email with a Copilot Studio agent, then flags, files, tasks and alerts — automatically. Built on Power Automate."/>
+<meta property="og:image" content="https://brunoqdf47.github.io/email-triage/triage-cover.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:url" content="https://brunoqdf47.github.io/email-triage/"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="description" content="A personal email-triage system: a Copilot Studio AI agent analyses every message, then Power Automate flags it, files it, creates a task and alerts Teams when urgent."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#09111F;--ink-2:#0E1A2C;--panel:#132236;--panel-2:#1A2C49;
+  --line:#1E3554;--line-soft:rgba(100,150,210,.12);
+  --text:#E6EDF8;--muted:#90A2C0;--faint:#516585;
+  --cyan:#2FD0BF;--cyan-dim:rgba(47,208,191,.10);--cyan-glow:rgba(47,208,191,.22);
+  --amber:#F5A623;--amber-dim:rgba(245,166,35,.12);
+  --red:#E26D6D;--red-dim:rgba(226,109,109,.12);
+  --green:#3EC87A;--green-dim:rgba(62,200,122,.13);
+  --display:'Space Grotesk',sans-serif;--body:'IBM Plex Sans',sans-serif;--mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--ink);color:var(--text);font-family:var(--body);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden;width:100%}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+  background-size:54px 54px;mask-image:radial-gradient(ellipse 130% 70% at 50% 0%,#000 15%,transparent 78%);opacity:.4}
+.wrap{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:0 clamp(18px,5vw,28px)}
+h1,h2,h3,h4{font-family:var(--display);font-weight:600;line-height:1.1;letter-spacing:-.02em}
+.mono{font-family:var(--mono);letter-spacing:.04em}
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);display:inline-flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:24px;height:1px;background:var(--cyan)}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:40;backdrop-filter:blur(12px);background:rgba(9,17,31,.72);border-bottom:1px solid var(--line-soft)}
+.topbar .row{max-width:1000px;margin:0 auto;padding:13px clamp(18px,5vw,28px);display:flex;justify-content:space-between;align-items:center;gap:14px}
+.topbar a.back{font-family:var(--mono);font-size:.7rem;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:7px;letter-spacing:.04em;transition:color .2s}
+.topbar a.back:hover{color:var(--cyan)}
+.topbar .tag{font-family:var(--mono);font-size:.62rem;color:var(--faint);letter-spacing:.13em;text-transform:uppercase}
+
+/* HERO */
+.hero{padding:64px 0 40px}
+.hero h1{font-size:clamp(2rem,5.2vw,3.4rem);margin:18px 0 18px;font-weight:700}
+.hero h1 .hl{color:var(--cyan)}
+.lede{font-size:clamp(1rem,2vw,1.18rem);color:var(--muted);max-width:60ch}
+.meta{display:flex;flex-wrap:wrap;gap:0;margin-top:30px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--ink-2)}
+.meta div{flex:1 1 150px;padding:14px 18px;border-right:1px solid var(--line)}
+.meta div:last-child{border-right:none}
+.meta .k{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.meta .v{font-family:var(--display);font-weight:500;font-size:.92rem;margin-top:5px}
+
+/* hero tech stack strip */
+.stack{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:22px}
+.stack-lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-right:4px}
+.stack-chip{display:inline-flex;align-items:center;gap:9px;font-family:var(--display);font-weight:600;font-size:1rem;padding:11px 16px;border-radius:11px;border:1px solid var(--cyan);background:var(--cyan-dim);color:var(--text);box-shadow:0 0 0 4px var(--cyan-glow)}
+.stack-chip .sc-ico{font-size:1.05rem}
+.stack-chip .sc-tag{font-family:var(--mono);font-weight:400;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);border-left:1px solid rgba(47,208,191,.4);padding-left:9px;margin-left:2px}
+.stack-plus{font-family:var(--display);font-weight:600;color:var(--faint);font-size:1.1rem}
+@media(max-width:520px){.stack-chip{font-size:.9rem;padding:10px 13px;flex:1 1 100%}.stack-plus{display:none}}
+
+section{padding:50px 0;border-top:1px solid var(--line-soft)}
+.stitle{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.stitle .idx{font-family:var(--mono);font-size:.76rem;color:var(--cyan);letter-spacing:.1em}
+h2{font-size:clamp(1.4rem,2.8vw,1.95rem)}
+.sub{color:var(--muted);max-width:66ch;margin-top:13px;font-size:1rem;line-height:1.7}
+
+/* ===== INTERACTIVE FLOW (signature) ===== */
+.demo{margin-top:28px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(160deg,var(--panel),var(--ink-2));padding:22px 18px 24px}
+.demo-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:6px}
+.demo-head .dh-label{font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.samples{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 22px}
+.sample-btn{font-family:var(--body);font-size:.84rem;padding:10px 14px;border-radius:9px;border:1px solid var(--line);background:var(--ink);color:var(--text);cursor:pointer;display:flex;align-items:center;gap:9px;transition:border-color .25s,background .25s}
+.sample-btn:hover{border-color:var(--cyan)}
+.sample-btn.active{border-color:var(--cyan);background:var(--cyan-dim)}
+.sample-btn .pri{width:8px;height:8px;border-radius:50%;flex:none}
+.pri.high{background:var(--red)}.pri.med{background:var(--amber)}.pri.low{background:var(--faint)}
+
+.flow{display:flex;flex-direction:column;gap:0;align-items:center}
+.node{width:100%;max-width:440px;border:1px solid var(--line);border-radius:10px;background:var(--ink-2);padding:13px 16px;position:relative;opacity:.4;transition:opacity .4s,border-color .4s,box-shadow .4s;transform:translateZ(0)}
+.node.lit{opacity:1;border-color:var(--cyan);box-shadow:0 0 0 4px var(--cyan-glow)}
+.node .ntop{display:flex;align-items:center;gap:10px}
+.node .nico{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-size:.8rem;flex:none;background:var(--panel-2);border:1px solid var(--line)}
+.node .nname{font-family:var(--display);font-weight:500;font-size:.95rem}
+.node .nsub{font-family:var(--mono);font-size:.62rem;color:var(--faint);letter-spacing:.04em;margin-top:2px}
+.connector{width:2px;height:22px;background:var(--line);position:relative;transition:background .4s}
+.connector.lit{background:var(--cyan)}
+.connector.lit::after{content:"";position:absolute;left:-3px;top:0;width:8px;height:8px;border-radius:50%;background:var(--cyan);animation:travel 1s ease forwards}
+@keyframes travel{from{top:0;opacity:1}to{top:22px;opacity:0}}
+
+/* agent analysis card */
+.agent-out{width:100%;max-width:440px;border:1px dashed var(--line);border-radius:10px;background:var(--ink);padding:14px 16px;margin-top:0;opacity:.35;transition:opacity .4s,border-color .4s;max-height:0;overflow:hidden;transition:max-height .5s ease,opacity .4s}
+.agent-out.show{opacity:1;max-height:280px;border-color:var(--cyan)}
+.agent-out .ao-lbl{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:9px}
+.ao-row{display:flex;gap:10px;font-size:.85rem;padding:5px 0;border-bottom:1px solid var(--line-soft)}
+.ao-row:last-child{border-bottom:none}
+.ao-row .ao-k{font-family:var(--mono);font-size:.66rem;color:var(--faint);width:78px;flex:none;text-transform:uppercase;letter-spacing:.06em;padding-top:2px}
+.ao-row .ao-v{color:var(--text)}
+.badge{font-family:var(--mono);font-size:.66rem;padding:2px 8px;border-radius:5px;letter-spacing:.04em}
+.badge.high{background:var(--red-dim);color:var(--red)}
+.badge.med{background:var(--amber-dim);color:var(--amber)}
+.badge.low{background:rgba(81,101,133,.2);color:var(--muted)}
+
+/* decisions */
+.decisions{display:flex;gap:10px;width:100%;max-width:440px;flex-wrap:wrap}
+.decision{flex:1 1 0;min-width:150px;border:1px solid var(--line);border-radius:9px;background:var(--ink-2);padding:11px 13px;opacity:.4;transition:opacity .4s,border-color .4s}
+.decision.lit{opacity:1;border-color:var(--amber)}
+.decision .dq{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.decision .dval{font-family:var(--display);font-weight:600;font-size:.95rem;margin-top:5px;color:var(--amber)}
+
+/* actions grid */
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;max-width:440px}
+@media(max-width:520px){.actions{grid-template-columns:1fr}}
+.action{border:1px solid var(--line);border-radius:9px;background:var(--ink-2);padding:13px;display:flex;align-items:flex-start;gap:10px;opacity:.32;transition:opacity .45s,border-color .45s,transform .45s;transform:translateY(6px)}
+.action.fire{opacity:1;border-color:var(--green);transform:none}
+.action .aico{font-size:1rem;flex:none}
+.action .aname{font-family:var(--display);font-weight:500;font-size:.88rem}
+.action .adesc{font-size:.74rem;color:var(--muted);margin-top:2px;line-height:1.4}
+.action .check{margin-left:auto;color:var(--green);font-family:var(--mono);font-size:.9rem;opacity:0;transition:opacity .3s}
+.action.fire .check{opacity:1}
+.action.skip{opacity:.2}
+.action.skip .aname{text-decoration:line-through;text-decoration-color:var(--faint)}
+
+.flow-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);align-self:flex-start;margin:18px 0 10px}
+.replay{margin-top:20px;font-family:var(--mono);font-size:.74rem;color:var(--cyan);background:none;border:1px solid var(--line);border-radius:8px;padding:9px 16px;cursor:pointer;transition:border-color .2s}
+.replay:hover{border-color:var(--cyan)}
+
+/* architecture */
+.arch{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:26px}
+@media(max-width:760px){.arch{grid-template-columns:1fr}}
+.acard{border:1px solid var(--line);border-radius:12px;background:var(--ink-2);padding:22px 20px}
+.acard .arole{font-family:var(--mono);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:10px;display:block}
+.acard h3{font-size:1.02rem;margin-bottom:8px}
+.acard p{color:var(--muted);font-size:.9rem;line-height:1.55}
+
+/* spec block (agent) */
+.spec{border:1px solid var(--line);border-radius:12px;background:var(--ink-2);padding:22px;margin-top:24px}
+.spec .slbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;display:block}
+.spec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:620px){.spec-grid{grid-template-columns:1fr}}
+.spec-item{border:1px solid var(--line-soft);border-radius:8px;background:var(--ink);padding:12px 14px}
+.spec-item .si-k{font-family:var(--mono);font-size:.64rem;color:var(--cyan);letter-spacing:.06em;margin-bottom:4px}
+.spec-item .si-v{font-size:.86rem;color:var(--muted);line-height:1.45}
+.rules{margin-top:14px;display:flex;flex-direction:column;gap:7px}
+.rule{display:flex;gap:10px;align-items:flex-start;font-size:.86rem;color:var(--muted);line-height:1.5}
+.rule .rb{font-family:var(--mono);font-size:.62rem;padding:2px 8px;border-radius:5px;flex:none;margin-top:1px}
+
+/* closing */
+.close-box{border:1px solid var(--line);border-radius:14px;background:linear-gradient(160deg,var(--panel-2),var(--ink-2));padding:36px 30px;margin-top:8px;position:relative;overflow:hidden}
+.close-box::after{content:"";position:absolute;bottom:-40px;left:-20px;width:200px;height:200px;background:radial-gradient(circle,var(--cyan-glow),transparent 70%);pointer-events:none}
+.close-box .statement{font-family:var(--display);font-weight:500;font-size:clamp(1.15rem,2.4vw,1.5rem);line-height:1.4;max-width:60ch}
+.close-box .statement em{font-style:normal;color:var(--cyan)}
+.close-box p{color:var(--muted);max-width:62ch;margin-top:16px;font-size:.98rem}
+.close-box a{color:var(--cyan);text-decoration:none;border-bottom:1px solid var(--line)}
+.close-box a:hover{border-color:var(--cyan)}
+
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;max-width:100%}
+.tool{font-family:var(--mono);font-size:.72rem;padding:7px 13px;border:1px solid var(--line);border-radius:20px;color:var(--muted);background:var(--ink-2);white-space:nowrap}
+.tool b{color:var(--cyan);font-weight:500}
+@media(max-width:520px){.tool{font-size:.66rem;padding:6px 11px}}
+
+footer{padding:34px 0 56px;color:var(--faint);font-family:var(--mono);font-size:.68rem;text-align:center;border-top:1px solid var(--line-soft);line-height:1.7}
+
+.rev{opacity:0;transform:translateY(14px);transition:opacity .65s ease,transform .65s ease}
+.rev.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.rev{opacity:1;transform:none;transition:none}*{animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="row">
+    <a class="back" href="../">← Portfolio</a>
+    <span class="tag">Build · Personal email triage</span>
+  </div>
+</div>
+
+<header class="hero wrap">
+  <span class="eyebrow">A system I built for myself</span>
+  <h1>My inbox <span class="hl">triages itself</span> now.</h1>
+  <p class="lede">An AI agent reads every email as it arrives, decides whether it needs my action or just my awareness, judges how urgent it is — then flags it, files it, creates a task and pings me on Teams when it matters. Built on Power Automate and a Copilot Studio agent I designed. Try it below.</p>
+
+  <div class="meta">
+    <div><div class="k">Type</div><div class="v">Personal productivity system</div></div>
+    <div><div class="k">Orchestration</div><div class="v">Power Automate</div></div>
+    <div><div class="k">The brain</div><div class="v">Copilot Studio agent</div></div>
+    <div><div class="k">Acts on</div><div class="v">Outlook · To&#8209;Do · Teams</div></div>
+  </div>
+
+  <div class="stack">
+    <span class="stack-lbl">Powered by</span>
+    <span class="stack-chip primary"><span class="sc-ico">⚡</span>Power Automate<span class="sc-tag">orchestration</span></span>
+    <span class="stack-plus">+</span>
+    <span class="stack-chip primary"><span class="sc-ico">🧠</span>Copilot Studio<span class="sc-tag">AI agent</span></span>
+  </div>
+</header>
+
+<main>
+
+<!-- INTERACTIVE DEMO -->
+<section class="wrap rev">
+  <div class="stitle"><span class="idx">01</span><h2>Watch an email move through it</h2></div>
+  <p class="sub">Pick an incoming email. Follow it through the live flow — the agent reads it, the rules route it, and only the right actions fire. (Sample data, anonymised.)</p>
+
+  <div class="demo">
+    <div class="demo-head"><span class="dh-label">Inbox · choose a message</span><span class="dh-label" id="status">idle</span></div>
+    <div class="samples">
+      <button class="sample-btn active" data-s="0"><span class="pri high"></span>"Server migration — need sign-off today"</button>
+      <button class="sample-btn" data-s="1"><span class="pri low"></span>"FYI: weekly ops digest (you're cc'd)"</button>
+      <button class="sample-btn" data-s="2"><span class="pri med"></span>"Can you review the vendor doc this week?"</button>
+    </div>
+
+    <div class="flow">
+      <div class="node" id="n-trigger"><div class="ntop"><div class="nico">📨</div><div><div class="nname">New email arrives</div><div class="nsub">Trigger · Office 365 Outlook</div></div></div></div>
+      <div class="connector" id="c0"></div>
+      <div class="node" id="n-init"><div class="ntop"><div class="nico">⚙️</div><div><div class="nname">Initialise variables</div><div class="nsub">summary · action · urgency · deadline</div></div></div></div>
+      <div class="connector" id="c1"></div>
+      <div class="node" id="n-agent"><div class="ntop"><div class="nico">🧠</div><div><div class="nname">Execute Copilot agent</div><div class="nsub">EmailAnalyzer · reads &amp; structures the message</div></div></div></div>
+
+      <div class="agent-out" id="agentOut">
+        <div class="ao-lbl">Agent output</div>
+        <div class="ao-row"><span class="ao-k">Summary</span><span class="ao-v" id="ao-sum">—</span></div>
+        <div class="ao-row"><span class="ao-k">Action</span><span class="ao-v" id="ao-act">—</span></div>
+        <div class="ao-row"><span class="ao-k">Urgency</span><span class="ao-v"><span class="badge" id="ao-urg">—</span></span></div>
+        <div class="ao-row"><span class="ao-k">Deadline</span><span class="ao-v" id="ao-due">—</span></div>
+      </div>
+
+      <div class="connector" id="c2"></div>
+      <span class="flow-label">Routing rules</span>
+      <div class="decisions">
+        <div class="decision" id="d-direct"><div class="dq">Direct action or cc'd?</div><div class="dval" id="d-direct-v">—</div></div>
+        <div class="decision" id="d-urg"><div class="dq">Urgency level?</div><div class="dval" id="d-urg-v">—</div></div>
+      </div>
+
+      <span class="flow-label">Actions fired</span>
+      <div class="actions">
+        <div class="action" id="a-flag"><span class="aico">🏷️</span><div><div class="aname">Flag &amp; categorise</div><div class="adesc">Outlook category + priority flag</div></div><span class="check">✓</span></div>
+        <div class="action" id="a-move"><span class="aico">📁</span><div><div class="aname">Move to folder</div><div class="adesc">Routes to the right inbox folder</div></div><span class="check">✓</span></div>
+        <div class="action" id="a-task"><span class="aico">✅</span><div><div class="aname">Create task</div><div class="adesc">Adds a To-Do with the action &amp; deadline</div></div><span class="check">✓</span></div>
+        <div class="action" id="a-teams"><span class="aico">💬</span><div><div class="aname">Alert on Teams</div><div class="adesc">Only when it's urgent &amp; needs me</div></div><span class="check">✓</span></div>
+      </div>
+
+      <button class="replay" id="replay">↻ Run again</button>
+    </div>
+  </div>
+</section>
+
+<!-- THE PROBLEM -->
+<section class="wrap rev">
+  <div class="stitle"><span class="idx">02</span><h2>Why I built it</h2></div>
+  <p class="sub">A high-volume inbox has a hidden cost: not the reading, but the sorting. Which of these forty messages actually need me? Which am I just cc'd on? What's genuinely urgent versus loud? I was doing that triage by hand, every morning, and it was eating the first hour of my day. So I handed the judgement to an agent and the busywork to a flow.</p>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="wrap rev">
+  <div class="stitle"><span class="idx">03</span><h2>How it's built — three parts</h2></div>
+  <p class="sub">A clean separation: one part orchestrates, one part thinks, one part acts. Each can be changed without breaking the others.</p>
+  <div class="arch">
+    <div class="acard">
+      <span class="arole">Orchestration</span>
+      <h3>Power Automate</h3>
+      <p>Triggers on every incoming email, sets up the variables, calls the agent, then runs the conditional logic that decides what happens next. The conductor — it holds the flow together but makes no judgement of its own.</p>
+    </div>
+    <div class="acard">
+      <span class="arole">The brain</span>
+      <h3>Copilot Studio agent</h3>
+      <p>A custom agent I designed. It reads the raw email and returns a structured verdict — a one-line summary, the action required, an urgency level, and any deadline — so the flow has something clean to branch on.</p>
+    </div>
+    <div class="acard">
+      <span class="arole">The hands</span>
+      <h3>Outlook · To-Do · Teams</h3>
+      <p>The flow turns the agent's verdict into real actions: an Outlook category and flag, a move to the right folder, a To-Do task with the deadline, and — only when it's urgent and mine — a Teams alert.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THE AGENT -->
+<section class="wrap rev">
+  <div class="stitle"><span class="idx">04</span><h2>The brain — what the agent extracts</h2></div>
+  <p class="sub">The whole system hinges on turning a messy email into four clean fields. That's the agent's only job, and it's prompted to do exactly that — nothing more.</p>
+  <div class="spec">
+    <span class="slbl">Structured output, every time</span>
+    <div class="spec-grid">
+      <div class="spec-item"><div class="si-k">SUMMARY</div><div class="si-v">One line, ~80 characters — what this email is actually about.</div></div>
+      <div class="spec-item"><div class="si-k">ACTION</div><div class="si-v">What I specifically need to do, or "None" if I'm only cc'd.</div></div>
+      <div class="spec-item"><div class="si-k">URGENCY</div><div class="si-v">HIGH · MEDIUM · LOW — judged by clear rules, not vibes.</div></div>
+      <div class="spec-item"><div class="si-k">DEADLINE</div><div class="si-v">Any date mentioned, or "None" — feeds straight into the task.</div></div>
+    </div>
+    <div class="rules">
+      <div class="rule"><span class="rb high" style="background:var(--red-dim);color:var(--red)">HIGH</span>Words like "urgent", "today", "ASAP", a VIP sender, or a deadline under 24h.</div>
+      <div class="rule"><span class="rb med" style="background:var(--amber-dim);color:var(--amber)">MEDIUM</span>A direct request to me with a deadline 2–7 days out.</div>
+      <div class="rule"><span class="rb low" style="background:rgba(81,101,133,.2);color:var(--muted)">LOW</span>FYI, informational, cc'd, no deadline.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<section class="wrap rev">
+  <div class="stitle"><span class="idx">05</span><h2>The principle underneath</h2></div>
+  <div class="close-box">
+    <p class="statement">The interesting part isn't that an AI can read an email. It's the <em>system around it</em> — the trigger, the routing rules, the actions, the one place urgency is decided — that turns a clever model call into something that quietly runs every day without me.</p>
+    <p>I built this for my own inbox, but it's the same pattern I apply at work: let the agent judge, let the flow act, and keep the logic in one place you can change. It's the lived version of the "deliver &amp; automate" stage in <a href="../method/">my method</a>.</p>
+  </div>
+</section>
+
+<!-- TOOLBOX -->
+<section class="wrap rev">
+  <div class="stitle"><span class="idx">06</span><h2>Built with</h2></div>
+  <div class="tools">
+    <span class="tool"><b>Power Automate</b></span>
+    <span class="tool"><b>Copilot Studio</b> agent</span>
+    <span class="tool">Office 365 Outlook</span>
+    <span class="tool">Microsoft To-Do</span>
+    <span class="tool">Microsoft Teams</span>
+    <span class="tool">Conditional logic</span>
+    <span class="tool">Prompt design</span>
+    <span class="tool">Structured output</span>
+  </div>
+</section>
+
+</main>
+
+<footer class="wrap">
+  Bruno Queiroz · A personal automation build · sample data is fictional and anonymised
+</footer>
+
+<script>
+/* ---- sample emails ---- */
+const SAMPLES=[
+  { // 0 — urgent, direct
+    sum:"Sign-off needed on tonight's server migration window",
+    act:"Approve the migration plan before 18:00",
+    urg:"HIGH", urgClass:"high",
+    due:"Today, 18:00",
+    direct:"Direct action", urgVal:"HIGH",
+    fire:{flag:true,move:true,task:true,teams:true}
+  },
+  { // 1 — cc'd, low
+    sum:"Weekly operations digest for the region",
+    act:"None — you're cc'd for awareness",
+    urg:"LOW", urgClass:"low",
+    due:"None",
+    direct:"Just cc'd", urgVal:"LOW",
+    fire:{flag:true,move:true,task:false,teams:false}
+  },
+  { // 2 — direct, medium
+    sum:"Review requested on the new vendor contract draft",
+    act:"Review the vendor document and reply",
+    urg:"MEDIUM", urgClass:"med",
+    due:"This week (Fri)",
+    direct:"Direct action", urgVal:"MEDIUM",
+    fire:{flag:true,move:true,task:true,teams:false}
+  }
+];
+
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let current=0, running=false, timers=[];
+
+const els={
+  status:document.getElementById('status'),
+  agentOut:document.getElementById('agentOut'),
+  sum:document.getElementById('ao-sum'), act:document.getElementById('ao-act'),
+  urg:document.getElementById('ao-urg'), due:document.getElementById('ao-due'),
+  dDirect:document.getElementById('d-direct'), dDirectV:document.getElementById('d-direct-v'),
+  dUrg:document.getElementById('d-urg'), dUrgV:document.getElementById('d-urg-v')
+};
+const nodes=['n-trigger','n-init','n-agent'].map(id=>document.getElementById(id));
+const conns=['c0','c1','c2'].map(id=>document.getElementById(id));
+const acts={flag:document.getElementById('a-flag'),move:document.getElementById('a-move'),task:document.getElementById('a-task'),teams:document.getElementById('a-teams')};
+
+function clearTimers(){timers.forEach(t=>clearTimeout(t));timers=[];}
+function reset(){
+  clearTimers();
+  nodes.forEach(n=>n.classList.remove('lit'));
+  conns.forEach(c=>c.classList.remove('lit'));
+  els.agentOut.classList.remove('show');
+  els.dDirect.classList.remove('lit');els.dUrg.classList.remove('lit');
+  els.dDirectV.textContent='—';els.dUrgV.textContent='—';
+  Object.values(acts).forEach(a=>{a.classList.remove('fire','skip');});
+  els.status.textContent='idle';
+}
+function at(ms,fn){timers.push(setTimeout(fn,ms));}
+
+function run(i){
+  reset();running=true;current=i;
+  const s=SAMPLES[i];
+  els.status.textContent='running…';
+
+  if(reduce){
+    nodes.forEach(n=>n.classList.add('lit'));conns.forEach(c=>c.classList.add('lit'));
+    fillAgent(s);els.agentOut.classList.add('show');
+    els.dDirect.classList.add('lit');els.dUrg.classList.add('lit');
+    els.dDirectV.textContent=s.direct;els.dUrgV.textContent=s.urgVal;
+    fireActions(s);els.status.textContent='done';running=false;return;
+  }
+
+  at(100,()=>nodes[0].classList.add('lit'));
+  at(550,()=>conns[0].classList.add('lit'));
+  at(800,()=>nodes[1].classList.add('lit'));
+  at(1250,()=>conns[1].classList.add('lit'));
+  at(1500,()=>{nodes[2].classList.add('lit');els.status.textContent='agent reading…';});
+  at(2100,()=>{fillAgent(s);els.agentOut.classList.add('show');});
+  at(2900,()=>conns[2].classList.add('lit'));
+  at(3200,()=>{els.dDirect.classList.add('lit');els.dDirectV.textContent=s.direct;});
+  at(3600,()=>{els.dUrg.classList.add('lit');els.dUrgV.textContent=s.urgVal;els.status.textContent='routing…';});
+  // fire actions sequentially
+  const order=['flag','move','task','teams'];
+  let d=4100;
+  order.forEach(k=>{
+    at(d,()=>{
+      if(s.fire[k]) acts[k].classList.add('fire');
+      else acts[k].classList.add('skip');
+    });
+    d+=380;
+  });
+  at(d+150,()=>{els.status.textContent='done';running=false;});
+}
+
+function fillAgent(s){
+  els.sum.textContent=s.sum;els.act.textContent=s.act;
+  els.due.textContent=s.due;
+  els.urg.textContent=s.urg;els.urg.className='badge '+s.urgClass;
+}
+function fireActions(s){
+  ['flag','move','task','teams'].forEach(k=>{
+    if(s.fire[k])acts[k].classList.add('fire');else acts[k].classList.add('skip');
+  });
+}
+
+document.querySelectorAll('.sample-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.sample-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    run(parseInt(btn.dataset.s));
+  });
+});
+document.getElementById('replay').addEventListener('click',()=>run(current));
+
+/* reveal + autostart demo when scrolled in */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
+document.querySelectorAll('.rev').forEach(el=>io.observe(el));
+
+const demoSec=document.querySelector('.demo');
+let demoStarted=false;
+const dio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&!demoStarted){demoStarted=true;run(0);dio.disconnect();}}),{threshold:.3});
+if(demoSec)dio.observe(demoSec);
+</script>
+</body>
+</html>
