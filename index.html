@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bruno Queiroz — Business Transformation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0a0e1a;
+  --ink2:#101627;
+  --panel:#141b2e;
+  --line:rgba(255,255,255,.08);
+  --fog:#8794ad;
+  --fog2:#5d6b85;
+  --paper:#eef1f8;
+  --gold:#c8a45c;
+  --azure:#5b9bd5;
+  --azure-soft:rgba(91,155,213,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);
+  color:var(--paper);
+  font-family:'Outfit',sans-serif;
+  font-weight:300;
+  line-height:1.65;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--gold);color:var(--ink)}
+
+/* ---------- atmosphere ---------- */
+.bg-grad{
+  position:fixed;inset:0;z-index:-2;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, rgba(91,155,213,.10), transparent 60%),
+    radial-gradient(900px 600px at -10% 30%, rgba(200,164,92,.06), transparent 55%),
+    linear-gradient(180deg, #0a0e1a 0%, #0c1120 100%);
+}
+.grain{
+  position:fixed;inset:0;z-index:-1;opacity:.035;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1080px;margin:0 auto;padding:0 32px}
+section{padding:110px 0;position:relative}
+
+/* ---------- nav ---------- */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:22px 40px;
+  background:rgba(10,14,26,0);
+  backdrop-filter:blur(0px);
+  transition:background .4s ease, backdrop-filter .4s ease, padding .4s ease;
+}
+nav.scrolled{background:rgba(10,14,26,.82);backdrop-filter:blur(14px);padding:16px 40px;border-bottom:1px solid var(--line)}
+.brand{font-family:'Fraunces',serif;font-size:18px;letter-spacing:.04em;color:var(--paper)}
+.brand span{color:var(--gold)}
+.navlinks{display:flex;gap:30px;font-size:13.5px;letter-spacing:.05em;text-transform:uppercase}
+.navlinks a{color:var(--fog);text-decoration:none;transition:color .25s}
+.navlinks a:hover{color:var(--paper)}
+@media(max-width:720px){.navlinks{display:none}}
+
+/* ---------- hero ---------- */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:90px}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:26px;
+}
+.hero h1{
+  font-family:'Fraunces',serif;font-weight:400;
+  font-size:clamp(44px,7.5vw,86px);line-height:1.02;letter-spacing:-.02em;
+  margin-bottom:28px;
+}
+.hero h1 em{font-style:italic;color:var(--azure)}
+.hero .lead{
+  font-size:clamp(17px,2.2vw,21px);color:var(--fog);max-width:620px;font-weight:300;
+}
+.hero .lead b{color:var(--paper);font-weight:500}
+.hero-cta{display:flex;gap:18px;margin-top:42px;flex-wrap:wrap}
+.btn{
+  font-family:'Outfit',sans-serif;font-size:14.5px;letter-spacing:.03em;
+  padding:14px 26px;border-radius:2px;text-decoration:none;cursor:pointer;
+  transition:all .3s ease;display:inline-flex;align-items:center;gap:10px;border:1px solid transparent;
+}
+.btn-gold{background:var(--gold);color:var(--ink);font-weight:500}
+.btn-gold:hover{background:#d8b572;transform:translateY(-2px)}
+.btn-ghost{border-color:var(--line);color:var(--paper)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ---------- global reach strip ---------- */
+.reach{
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  background:rgba(255,255,255,.015);padding:34px 0;
+}
+.reach-inner{display:flex;justify-content:space-between;align-items:center;gap:30px;flex-wrap:wrap}
+.reach-label{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--fog)}
+.flags{display:flex;gap:28px;flex-wrap:wrap}
+.flag{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:64px}
+.flag .dot{font-size:26px;line-height:1}
+.flag .nm{font-size:12px;letter-spacing:.04em;color:var(--fog)}
+
+/* ---------- section heading ---------- */
+.shead{display:flex;align-items:baseline;gap:18px;margin-bottom:50px}
+.shead .num{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold);letter-spacing:.1em}
+.shead h2{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(28px,4vw,42px);letter-spacing:-.01em}
+.shead .rule{flex:1;height:1px;background:var(--line);align-self:center}
+
+/* ---------- about ---------- */
+.about-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:60px}
+@media(max-width:780px){.about-grid{grid-template-columns:1fr;gap:40px}}
+.about p{font-size:17px;color:#c4cbdb;margin-bottom:22px;font-weight:300}
+.about p b{color:var(--paper);font-weight:500}
+.about .pull{
+  font-family:'Fraunces',serif;font-style:italic;font-size:22px;line-height:1.45;
+  color:var(--azure);border-left:2px solid var(--gold);padding-left:22px;
+}
+.differentiator{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:30px}
+.differentiator h3{font-family:'Outfit';font-weight:500;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+.differentiator ul{list-style:none}
+.differentiator li{display:flex;gap:12px;padding:11px 0;font-size:15px;color:#c4cbdb;border-bottom:1px solid var(--line)}
+.differentiator li:last-child{border-bottom:none}
+.differentiator li::before{content:"→";color:var(--azure);flex-shrink:0}
+
+/* ---------- metrics ---------- */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+@media(max-width:780px){.metrics{grid-template-columns:repeat(2,1fr)}}
+.metric{padding:38px 26px;border-right:1px solid var(--line);background:rgba(255,255,255,.012)}
+.metric:last-child{border-right:none}
+@media(max-width:780px){.metric:nth-child(2){border-right:none}.metric:nth-child(1),.metric:nth-child(2){border-bottom:1px solid var(--line)}}
+.metric .big{font-family:'Fraunces',serif;font-size:46px;line-height:1;color:var(--paper);margin-bottom:10px}
+.metric .big span{color:var(--gold)}
+.metric .cap{font-size:13.5px;color:var(--fog);letter-spacing:.02em}
+
+/* ---------- timeline ---------- */
+.tl{position:relative;padding-left:34px}
+.tl::before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:1px;background:linear-gradient(var(--gold),var(--azure),transparent)}
+.job{position:relative;margin-bottom:46px}
+.job::before{content:"";position:absolute;left:-34px;top:7px;width:15px;height:15px;border-radius:50%;background:var(--ink);border:2px solid var(--gold);transition:all .3s}
+.job:hover::before{background:var(--gold);box-shadow:0 0 0 5px rgba(200,164,92,.15)}
+.job .when{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--gold);letter-spacing:.06em;margin-bottom:6px}
+.job h3{font-family:'Fraunces',serif;font-weight:500;font-size:22px;margin-bottom:3px}
+.job .org{font-size:14.5px;color:var(--azure);margin-bottom:16px;letter-spacing:.02em}
+.job ul{list-style:none}
+.job li{font-size:15px;color:#bcc4d6;padding:6px 0 6px 20px;position:relative;font-weight:300}
+.job li::before{content:"";position:absolute;left:0;top:14px;width:6px;height:1px;background:var(--fog)}
+.job .tags{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--fog);border:1px solid var(--line);padding:4px 10px;border-radius:2px}
+
+/* ---------- expertise ---------- */
+.exp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:780px){.exp-grid{grid-template-columns:1fr}}
+.exp-card{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:28px;transition:all .35s ease}
+.exp-card:hover{border-color:rgba(200,164,92,.4);transform:translateY(-4px)}
+.exp-card .ic{font-size:22px;margin-bottom:16px}
+.exp-card h3{font-family:'Outfit';font-weight:500;font-size:16px;margin-bottom:12px;letter-spacing:.01em}
+.exp-card p{font-size:14px;color:var(--fog);font-weight:300}
+
+/* ---------- international journey (globe) ---------- */
+.journey{border-top:1px solid var(--line)}
+.journey-grid{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center}
+@media(max-width:820px){.journey-grid{grid-template-columns:1fr;gap:32px}}
+.globe-wrap{position:relative;display:flex;justify-content:center;align-items:center}
+#globe{width:100%;max-width:440px;aspect-ratio:1;margin:0 auto;display:block;filter:drop-shadow(0 0 50px rgba(91,155,213,.14))}
+#globe canvas{width:100%!important;height:100%!important;display:block;cursor:grab}
+#globe canvas:active{cursor:grabbing}
+.journey-copy .pull{font-family:'Fraunces',serif;font-style:italic;font-size:22px;line-height:1.45;color:var(--azure);border-left:2px solid var(--gold);padding-left:22px;margin-bottom:24px}
+.journey-legend{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.jstop{display:flex;align-items:center;gap:13px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;color:#c4cbdb;font-weight:300;transition:color .3s,opacity .3s;opacity:.5}
+.jstop:last-child{border-bottom:none}
+.jstop.lit{opacity:1;color:var(--paper)}
+.jstop .jn{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);width:20px;flex-shrink:0}
+.jstop .jflag{font-size:17px;line-height:1}
+.jstop .jyr{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--fog);letter-spacing:.04em}
+
+/* ---------- learning ---------- */
+.learn-row{display:flex;gap:18px;flex-wrap:wrap}
+.lcard{flex:1;min-width:240px;background:rgba(255,255,255,.015);border:1px solid var(--line);border-radius:4px;padding:24px;display:flex;gap:16px;align-items:flex-start}
+.lcard .st{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:2px;flex-shrink:0}
+.st.done{background:rgba(91,155,213,.15);color:var(--azure)}
+.st.prog{background:rgba(200,164,92,.15);color:var(--gold)}
+.lcard h4{font-family:'Outfit';font-weight:500;font-size:15.5px;margin-bottom:4px}
+.lcard p{font-size:13px;color:var(--fog);font-weight:300}
+
+/* ---------- credentials ---------- */
+.credtitle{font-family:'Outfit';font-weight:500;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:54px 0 24px}
+.cred-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+@media(max-width:780px){.cred-grid{grid-template-columns:1fr}}
+.cred{background:rgba(255,255,255,.015);border:1px solid var(--line);border-radius:4px;padding:22px 24px;transition:border-color .3s}
+.cred:hover{border-color:rgba(91,155,213,.35)}
+.cred .cg{display:block;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.06em;color:var(--azure);margin-bottom:10px}
+.cred p{font-size:14px;color:#bcc4d6;font-weight:300;line-height:1.6}
+
+/* ---------- languages ---------- */
+.lang-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px 40px}
+@media(max-width:780px){.lang-grid{grid-template-columns:1fr}}
+.lang-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+.lname{font-family:'Fraunces',serif;font-size:18px;color:var(--paper)}
+.llevel{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.05em;color:var(--fog);text-transform:uppercase}
+.bar{height:3px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--azure));border-radius:3px;transform-origin:left;animation:grow 1.3s cubic-bezier(.22,1,.36,1) both}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+/* ---------- contact ---------- */
+.contact{text-align:center;padding:130px 0}
+.contact .eyebrow{display:block;margin-bottom:22px}
+.contact h2{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(32px,5vw,56px);line-height:1.08;margin-bottom:30px;letter-spacing:-.02em}
+.contact h2 em{font-style:italic;color:var(--azure)}
+.contact .actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:var(--fog2);font-size:13px;color:#5d6b85}
+footer .langs{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--fog);margin-top:8px;letter-spacing:.04em}
+
+/* ---------- credentials & languages ---------- */
+.credtitle{font-family:'Outfit';font-weight:500;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:54px 0 24px}
+.cred-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+@media(max-width:780px){.cred-grid{grid-template-columns:1fr}}
+.cred{background:rgba(255,255,255,.015);border:1px solid var(--line);border-radius:4px;padding:22px 24px;transition:border-color .3s}
+.cred:hover{border-color:rgba(200,164,92,.35)}
+.cred .cg{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--azure);margin-bottom:10px}
+.cred p{font-size:14px;color:#bcc4d6;font-weight:300;line-height:1.6}
+.lang-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:26px 40px}
+@media(max-width:780px){.lang-grid{grid-template-columns:1fr}}
+.lang-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+.lname{font-family:'Fraunces',serif;font-size:18px}
+.llevel{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.05em;color:var(--fog)}
+.bar{height:3px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--azure));border-radius:3px;width:0;transition:width 1.2s cubic-bezier(.22,1,.36,1)}
+
+/* ---------- reveal animation ---------- */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .9s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1)}
+.reveal.in{opacity:1;transform:none}
+.hero .eyebrow,.hero .lead,.hero-cta,.hero .mono-line{opacity:0;transform:translateY(24px);animation:rise .95s cubic-bezier(.22,1,.36,1) forwards}
+.hero .lead{animation-delay:.9s}
+.hero .mono-line{animation-delay:1.02s}
+.hero-cta{animation-delay:1.15s}
+@keyframes rise{to{opacity:1;transform:none}}
+.hero h1 .word{display:inline-block;opacity:0;transform:translateY(26px);animation:rise .7s cubic-bezier(.22,1,.36,1) forwards}
+
+/* ---------- featured method ---------- */
+.feature{
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  background:
+    radial-gradient(700px 300px at 85% 50%, rgba(91,155,213,.10), transparent 65%),
+    rgba(255,255,255,.012);
+  padding:0;
+}
+.feature a.feature-inner{
+  display:grid;grid-template-columns:1.25fr .75fr;gap:40px;align-items:center;
+  max-width:1080px;margin:0 auto;padding:46px 32px;text-decoration:none;color:inherit;
+  transition:transform .4s ease;
+}
+@media(max-width:820px){.feature a.feature-inner{grid-template-columns:1fr;gap:28px;padding:40px 32px}}
+.feature-tag{
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:10px;
+}
+.feature-tag::before{content:"";width:22px;height:1px;background:var(--gold)}
+.feature h3{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(24px,3.2vw,34px);line-height:1.12;letter-spacing:-.01em;margin-bottom:14px}
+.feature h3 em{font-style:italic;color:var(--azure)}
+.feature p{font-size:15.5px;color:#bcc4d6;font-weight:300;max-width:52ch;margin-bottom:22px}
+.feature .go{
+  font-family:'Outfit',sans-serif;font-size:14px;letter-spacing:.03em;color:var(--gold);
+  display:inline-flex;align-items:center;gap:9px;transition:gap .3s ease;
+}
+.feature a.feature-inner:hover .go{gap:16px}
+.feature a.feature-inner:hover{transform:translateY(-3px)}
+.feature-viz{border:1px solid var(--line);border-radius:6px;background:linear-gradient(160deg,#101627,#0c1120);padding:14px}
+.feature-viz svg{width:100%;height:auto;display:block}
+.feature-viz .vlabels{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--fog2);padding:8px 4px 2px}
+.feature-viz .vlabels .a{color:var(--gold)}.feature-viz .vlabels .b{color:var(--azure)}
+</style>
+</head>
+<body>
+<div class="bg-grad"></div>
+<div class="grain"></div>
+
+<nav id="nav">
+  <div class="brand">Bruno <span>Queiroz</span></div>
+  <div class="navlinks">
+    <a href="#about">Profile</a>
+    <a href="#method">Method</a>
+    <a href="#experience">Experience</a>
+    <a href="#expertise">Expertise</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">AI &amp; Automation Specialist · Intelligent Process Automation</div>
+    <h1><span class="word" style="animation-delay:.15s">Automation</span> <span class="word" style="animation-delay:.22s">and</span> <span class="word" style="animation-delay:.29s">AI</span> <span class="word" style="animation-delay:.36s">that</span> <span class="word" style="animation-delay:.43s">solve</span> <span class="word" style="animation-delay:.5s">the</span> <em class="word" style="animation-delay:.57s">right</em> <span class="word" style="animation-delay:.64s">problems.</span></h1>
+    <p class="lead">15+ years at the intersection of <b>intelligent automation, AI, and business operations</b>. I bring what many automation specialists don't — the business depth to know <em>what</em> to automate and <em>why</em>, then design, build, and deliver it end-to-end.</p>
+    <p class="mono-line" style="font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:.1em;color:var(--fog);margin-top:18px;text-transform:uppercase">UiPath · Power Platform · Python · SAP · AI Enablement · Global Operations</p>
+    <div class="hero-cta">
+      <a href="#contact" class="btn btn-gold">Start a conversation →</a>
+      <a href="Bruno_Queiroz_CV.pdf" class="btn btn-ghost" download>Download CV</a>
+    </div>
+  </div>
+</header>
+
+<!-- GLOBAL REACH -->
+<div class="reach">
+  <div class="wrap reach-inner">
+    <div class="reach-label">Cross-border delivery across</div>
+    <div class="flags">
+      <div class="flag"><span class="dot">🇧🇷</span><span class="nm">Brazil</span></div>
+      <div class="flag"><span class="dot">🇩🇪</span><span class="nm">Germany</span></div>
+      <div class="flag"><span class="dot">🇨🇱</span><span class="nm">Chile</span></div>
+      <div class="flag"><span class="dot">🇦🇷</span><span class="nm">Argentina</span></div>
+      <div class="flag"><span class="dot">🇨🇴</span><span class="nm">Colombia</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURED METHOD -->
+<section class="feature" id="method" style="padding:0">
+  <a class="feature-inner reveal" href="method/">
+    <div>
+      <div class="feature-tag">Featured · The method</div>
+      <h3>From chaos to system — <em>how I operationalise AI &amp; automation.</em></h3>
+      <p>A walkthrough of the method I use to turn scattered, ad-hoc automation requests into a governed system that delivers, measures and sustains its own value. Six interactive stages — tap to explore the practices, artifacts and tools behind each one.</p>
+      <span class="go">Explore the method →</span>
+    </div>
+    <div class="feature-viz">
+      <svg id="miniviz" viewBox="0 0 120 60" aria-label="Scattered nodes organising into a structured grid"></svg>
+      <div class="vlabels"><span class="a">Ad-hoc</span><span class="b">Governed system</span></div>
+    </div>
+  </a>
+</section>
+
+<!-- FEATURED CASE -->
+<section class="feature feature-case" id="case-intake" style="padding:0">
+  <a class="feature-inner reveal" href="case-intake/">
+    <div>
+      <div class="feature-tag">Featured · Technical case</div>
+      <h3>The guardrail that redrew the architecture — <em>a form-to-GitHub intake case.</em></h3>
+      <p>A real delivery: a tenant security policy blocked the obvious integration path. Rather than seek exceptions, I re-architected the intake inside already-sanctioned tooling — Power Automate to an in-network UiPath robot to GitHub — into a more reachable, auditable system. Walk the live pipeline and the engineering decisions behind it.</p>
+      <span class="go">Explore the case →</span>
+    </div>
+    <div class="feature-viz">
+      <svg viewBox="0 0 120 60" aria-label="A blocked cloud path reroutes in-network to reach GitHub">
+        <circle cx="14" cy="30" r="2.6" fill="#5b9bd5"/>
+        <path d="M16 30 L40 18" stroke="#5d6b85" stroke-width="1" fill="none"/>
+        <path d="M16 30 L40 42" stroke="#5d6b85" stroke-width="1" fill="none"/>
+        <circle cx="42" cy="18" r="2.4" fill="#c8a45c"/>
+        <line x1="44" y1="18" x2="62" y2="18" stroke="#c8a45c" stroke-width="1" stroke-dasharray="2 2"/>
+        <line x1="66" y1="14" x2="73" y2="22" stroke="#c8a45c" stroke-width="1.4" stroke-linecap="round"/>
+        <line x1="73" y1="14" x2="66" y2="22" stroke="#c8a45c" stroke-width="1.4" stroke-linecap="round"/>
+        <circle cx="42" cy="42" r="2.4" fill="#5b9bd5"/>
+        <line x1="44" y1="42" x2="74" y2="42" stroke="#5b9bd5" stroke-width="1"/>
+        <circle cx="76" cy="42" r="2.4" fill="#5b9bd5"/>
+        <line x1="78" y1="42" x2="100" y2="42" stroke="#5b9bd5" stroke-width="1"/>
+        <circle cx="103" cy="42" r="2.6" fill="#5b9bd5"/>
+        <path d="M108 40 l2.4 2.6 l4.6 -6.2" stroke="#5b9bd5" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="vlabels"><span class="a">Blocked at DLP</span><span class="b">Reaches GitHub</span></div>
+    </div>
+  </a>
+</section>
+  <div class="wrap">
+    <div class="shead reveal"><span class="num">01</span><h2>Profile</h2><span class="rule"></span></div>
+    <div class="about-grid">
+      <div class="about reveal">
+        <p>I sit at the intersection of <b>intelligent automation, AI, and business operations</b> — building automated solutions that don't just run, but solve the right problems. My edge over many automation specialists: I understand the business deeply enough to know <em>what</em> to automate and <em>why</em>, not just <em>how</em>.</p>
+        <p>Currently a core member of the <b>Global AI Innovation Hub at KHS</b> (Germany), I'm helping structure a new transformation function from the ground up: running process discovery, identifying high-ROI automation opportunities, and building AI adoption and governance practices across five countries.</p>
+        <p class="pull">My approach is business-first. Technology is the lever — never the goal.</p>
+      </div>
+      <div class="differentiator reveal">
+        <h3>What sets me apart</h3>
+        <ul>
+          <li>Deep automation &amp; AI expertise — RPA, Power Platform, Python, SAP integration</li>
+          <li>The business depth to know <em>what</em> to automate and <em>why</em>, then deliver it end-to-end</li>
+          <li>A bridge between technical and non-technical teams across multicultural, cross-border settings</li>
+          <li>Process discovery &amp; analysis that turns operational bottlenecks into scalable solutions</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METRICS -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="metrics reveal">
+      <div class="metric"><div class="big">15<span>+</span></div><div class="cap">Years in multinational environments</div></div>
+      <div class="metric"><div class="big">5</div><div class="cap">Countries of cross-border delivery</div></div>
+      <div class="metric"><div class="big">4</div><div class="cap">Languages — PT · EN · ES · DE</div></div>
+      <div class="metric"><div class="big">15<span>+</span></div><div class="cap">Certifications across AI, automation &amp; business</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- INTERNATIONAL JOURNEY -->
+<section id="journey" class="journey" style="padding-top:60px">
+  <div class="wrap">
+    <div class="shead reveal"><span class="num">02</span><h2>Global Operations &amp; Experience</h2><span class="rule"></span></div>
+    <div class="journey-grid">
+      <div class="globe-wrap reveal">
+        <div id="globe" aria-label="Rotating 3D globe tracing an international journey from Brazil"></div>
+      </div>
+      <div class="journey-copy reveal">
+        <p class="pull">Fifteen-plus years that didn't stay in one place.</p>
+        <p style="font-size:15.5px;color:#bcc4d6;font-weight:300;margin-bottom:22px">A path traced across continents — projects delivered on-site and remotely, plus the places that shaped how I work across cultures. Drawn here in the order they happened.</p>
+        <div class="journey-legend">
+          <div class="jstop" data-i="0"><span class="jn">01</span><span class="jflag">🇦🇺</span>Australia<span class="jyr">lived abroad</span></div>
+          <div class="jstop" data-i="1"><span class="jn">02</span><span class="jflag">🇨🇱</span>Chile<span class="jyr">2017</span></div>
+          <div class="jstop" data-i="2"><span class="jn">03</span><span class="jflag">🇨🇴</span>Colombia<span class="jyr">2021–22</span></div>
+          <div class="jstop" data-i="3"><span class="jn">04</span><span class="jflag">🇨🇱</span>Chile<span class="jyr">2023</span></div>
+          <div class="jstop" data-i="4"><span class="jn">05</span><span class="jflag">🇦🇷</span>Argentina<span class="jyr">2023</span></div>
+          <div class="jstop" data-i="5"><span class="jn">06</span><span class="jflag">🇨🇴</span>Colombia<span class="jyr">2023</span></div>
+          <div class="jstop" data-i="6"><span class="jn">07</span><span class="jflag">🇮🇹</span>Italy<span class="jyr">2024</span></div>
+          <div class="jstop" data-i="7"><span class="jn">08</span><span class="jflag">🇩🇪</span>Germany<span class="jyr">2024</span></div>
+          <div class="jstop" data-i="8"><span class="jn">09</span><span class="jflag">🇳🇱</span>Netherlands<span class="jyr">2024</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="wrap">
+    <div class="shead reveal"><span class="num">03</span><h2>Experience</h2><span class="rule"></span></div>
+    <div class="tl">
+      <div class="job reveal">
+        <div class="when">OCT 2025 — PRESENT · GERMANY (REMOTE)</div>
+        <h3>AI &amp; RPA Specialist — Global AI Innovation Hub</h3>
+        <div class="org">KHS Group · acting as Business Process Analyst</div>
+        <ul>
+          <li>Partner with cross-functional departments to discover automation opportunities and translate operational bottlenecks into prioritized, value-generating workflows</li>
+          <li>Helping structure a newly created innovation function — defining process-assessment methodology, automation governance, and intake/prioritization frameworks</li>
+          <li>Lead AI adoption (Microsoft Copilot) and governance aligned with ISO 27001, GDPR/LGPD across international sites</li>
+        </ul>
+        <div class="tags"><span class="tag">Process Discovery</span><span class="tag">AI Enablement</span><span class="tag">SAP S/4HANA</span><span class="tag">UiPath</span><span class="tag">Stakeholder Mgmt</span></div>
+      </div>
+      <div class="job reveal">
+        <div class="when">SEP 2023 — OCT 2025 · GERMANY (REMOTE)</div>
+        <h3>Engineering Application Specialist — Global Level</h3>
+        <div class="org">KHS Group</div>
+        <ul>
+          <li>Owned global support, deployment, and license cost optimization for engineering platforms, ensuring worldwide licensing compliance</li>
+          <li>Designed and delivered RPA solutions automating repetitive engineering workflows — reducing execution time and human error</li>
+          <li>Led on-site software training and implementation in Germany (Dortmund &amp; Bad Kreuznach)</li>
+        </ul>
+        <div class="tags"><span class="tag">Cost Optimization</span><span class="tag">RPA</span><span class="tag">Global Delivery</span></div>
+      </div>
+      <div class="job reveal">
+        <div class="when">MAY 2021 — AUG 2023 · BRAZIL (HYBRID)</div>
+        <h3>LATAM IT Specialist &amp; Infrastructure Analyst</h3>
+        <div class="org">Sovos Compliance</div>
+        <ul>
+          <li>Managed LATAM-wide infrastructure programs across 5+ countries, applying Agile &amp; PMBOK practices to deliver scalable, business-aligned solutions</li>
+          <li>Governed vendor performance, service contracts, and departmental budgets to optimize resource allocation</li>
+          <li>Led regional data-center rollouts across Argentina, Brazil, Chile, and Colombia</li>
+        </ul>
+        <div class="tags"><span class="tag">Vendor Governance</span><span class="tag">Budget Control</span><span class="tag">Cross-border PM</span></div>
+      </div>
+      <div class="job reveal">
+        <div class="when">FEB 2013 — OCT 2020 · BRAZIL &amp; CHILE</div>
+        <h3>IT Coordinator — Infrastructure &amp; Project Management</h3>
+        <div class="org">Fluor Corporation</div>
+        <ul>
+          <li>Planned and executed multiple infrastructure and digitalization projects using Agile and PMI standards</li>
+          <li>Primary liaison with global departments — aligning local operations with corporate standards and global strategy</li>
+          <li>Led client-facing international rollouts, including a project and data-center refresh in Santiago, Chile</li>
+        </ul>
+        <div class="tags"><span class="tag">Global Liaison</span><span class="tag">Project Delivery</span><span class="tag">Team Leadership</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERTISE -->
+<section id="expertise">
+  <div class="wrap">
+    <div class="shead reveal"><span class="num">04</span><h2>Expertise</h2><span class="rule"></span></div>
+    <div class="exp-grid">
+      <div class="exp-card reveal"><div class="ic">⚙️</div><h3>Intelligent Process Automation</h3><p>RPA &amp; hyperautomation with UiPath, Power Platform, and Python, integrated with SAP S/4HANA.</p></div>
+      <div class="exp-card reveal"><div class="ic">🧭</div><h3>AI Enablement &amp; Governance</h3><p>Responsible AI adoption (Copilot, agents) aligned with ISO 27001, GDPR/LGPD — turning AI into operational agility.</p></div>
+      <div class="exp-card reveal"><div class="ic">🎯</div><h3>Business Process Analysis</h3><p>Process discovery, mapping (BPMN), and requirements — finding where real inefficiency, and ROI, lives before automating.</p></div>
+      <div class="exp-card reveal"><div class="ic">🔗</div><h3>Business–Technology Bridge</h3><p>Translating business needs into technical solutions, working fluently with both technical and non-technical stakeholders.</p></div>
+      <div class="exp-card reveal"><div class="ic">📈</div><h3>Operational Excellence</h3><p>KPIs, continuous improvement, and efficiency — grounded in Six Sigma methodology.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- LEARNING & CREDENTIALS -->
+<section style="padding-top:60px">
+  <div class="wrap">
+    <div class="shead reveal"><span class="num">05</span><h2>Credentials &amp; Languages</h2><span class="rule"></span></div>
+    <h3 class="credtitle reveal" style="margin-top:0">Continuous Growth — Business Focus</h3>
+    <div class="learn-row">
+      <div class="lcard reveal"><span class="st done">Done</span><div><h4>Finance for Non-Financial Professionals</h4><p>UC Irvine · Coursera — speaking the language of ROI, OPEX &amp; payback</p></div></div>
+      <div class="lcard reveal"><span class="st done">Done</span><div><h4>Six Sigma and the Organization</h4><p>Kennesaw State University — operational excellence foundations</p></div></div>
+    </div>
+
+    <h3 class="credtitle reveal">Certifications</h3>
+    <div class="cred-grid">
+      <div class="cred reveal"><span class="cg">Process &amp; Automation</span><p>UiPath Process Mining Developer · UiPath Automation Developer Associate · Power Automate &amp; M365 Copilot (Advanced) · n8n · Zapier</p></div>
+      <div class="cred reveal"><span class="cg">AI &amp; Data</span><p>AI-102 Microsoft Azure AI Solution · Python for Applied AI · Generative AI Integration</p></div>
+      <div class="cred reveal"><span class="cg">Enterprise &amp; Governance</span><p>SAP S/4HANA (Finance, Controlling, ABAP) · ISO 27001 (EXIN) · SC-900 Security, Compliance &amp; Identity</p></div>
+      <div class="cred reveal"><span class="cg">Delivery &amp; Communication</span><p>IT Project Management &amp; Cross-Border Business Communication · Agile/Scrum · PMBOK-aligned practices</p></div>
+    </div>
+
+    <h3 class="credtitle reveal">Languages</h3>
+    <div class="lang-grid">
+      <div class="lang reveal"><div class="lang-top"><span class="lname">Portuguese</span><span class="llevel">Native</span></div><div class="bar"><i style="width:100%"></i></div></div>
+      <div class="lang reveal"><div class="lang-top"><span class="lname">English</span><span class="llevel">Fluent</span></div><div class="bar"><i style="width:90%"></i></div></div>
+      <div class="lang reveal"><div class="lang-top"><span class="lname">Spanish</span><span class="llevel">Fluent</span></div><div class="bar"><i style="width:88%"></i></div></div>
+      <div class="lang reveal"><div class="lang-top"><span class="lname">German</span><span class="llevel">Intermediate · studying</span></div><div class="bar"><i style="width:50%"></i></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact">
+  <div class="wrap">
+    <h2 class="reveal">Let's turn complexity into <em>outcomes.</em></h2>
+    <div class="actions reveal">
+      <a href="mailto:bruno.q.d.ferreira47@gmail.com" class="btn btn-gold">Email me →</a>
+      <a href="https://www.linkedin.com/in/bruno-queiroz-281125125/" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Bruno Queiroz — Business Transformation · AI &amp; Process Excellence · São Paulo, Brazil
+    <div class="langs">Portuguese (Native) · English (Fluent) · Spanish (Fluent) · German (Intermediate)</div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// nav background on scroll
+const nav=document.getElementById('nav');
+addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>40));
+// preserve language bar widths, then animate when revealed
+document.querySelectorAll('.bar i').forEach(b=>{b.dataset.w=b.style.width;b.style.width='0'});
+// reveal on scroll
+const io=new IntersectionObserver((es)=>{
+  es.forEach(e=>{if(e.isIntersecting){
+    e.target.classList.add('in');
+    const bar=e.target.querySelector('.bar i');
+    if(bar){setTimeout(()=>bar.style.width=bar.dataset.w,150)}
+    io.unobserve(e.target)
+  }});
+},{threshold:.14});
+document.querySelectorAll('.reveal').forEach((el,i)=>{
+  el.style.transitionDelay=(i%3*90)+'ms';
+  io.observe(el);
+});
+
+/* mini chaos -> system viz in featured section */
+(function(){
+  const svg=document.getElementById('miniviz');if(!svg)return;
+  const NS='http://www.w3.org/2000/svg';
+  const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const COLS=6,ROWS=3,W=120,H=60,mx=16,my=14;
+  const sx=(W-2*mx)/(COLS-1),sy=(H-2*my)/(ROWS-1);
+  const nodes=[];
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)
+    nodes.push({gx:mx+c*sx,gy:my+r*sy,x:Math.random()*W,y:Math.random()*H,r,c});
+  const lg=document.createElementNS(NS,'g');svg.appendChild(lg);
+  const lines=[];
+  function addL(a,b){const l=document.createElementNS(NS,'line');l.setAttribute('stroke','#5b9bd5');l.setAttribute('stroke-width','.4');l.setAttribute('opacity','0');lg.appendChild(l);lines.push({el:l,a,b});}
+  nodes.forEach(n=>{const rt=nodes.find(m=>m.r===n.r&&m.c===n.c+1);const dn=nodes.find(m=>m.c===n.c&&m.r===n.r+1);if(rt)addL(n,rt);if(dn)addL(n,dn);});
+  nodes.forEach(n=>{n.el=document.createElementNS(NS,'circle');n.el.setAttribute('r','1.7');n.el.setAttribute('fill',(n.r+n.c)%4===0?'#c8a45c':'#5b9bd5');n.el.setAttribute('cx',n.x);n.el.setAttribute('cy',n.y);svg.appendChild(n.el);});
+  function setL(p){lines.forEach(({el,a,b})=>{el.setAttribute('x1',a.cx);el.setAttribute('y1',a.cy);el.setAttribute('x2',b.cx);el.setAttribute('y2',b.cy);el.setAttribute('opacity',(Math.max(0,p-.6)/.4*.45).toFixed(2));});}
+  if(reduce){nodes.forEach(n=>{n.cx=n.gx;n.cy=n.gy;n.el.setAttribute('cx',n.gx);n.el.setAttribute('cy',n.gy);});setL(1);return;}
+  const ease=t=>1-Math.pow(1-t,3);let started=false;
+  function run(){let start=null;function fr(ts){if(!start)start=ts;const p=Math.min((ts-start)/1400,1),e=ease(p);nodes.forEach(n=>{n.cx=(n.x+(n.gx-n.x)*e).toFixed(2);n.cy=(n.y+(n.gy-n.y)*e).toFixed(2);n.el.setAttribute('cx',n.cx);n.el.setAttribute('cy',n.cy);});setL(p);if(p<1)requestAnimationFrame(fr);}requestAnimationFrame(fr);}
+  const vo=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&!started){started=true;run();vo.disconnect();}}),{threshold:.3});
+  vo.observe(svg);
+})();
+
+/* ---------- 3D dotted globe — international journey ---------- */
+(function(){
+  const host=document.getElementById('globe');
+  if(!host || typeof THREE==='undefined') return;
+  const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  const mask=[
+    "0000000000011110000000111000001100000111111111111000000",
+    "0011111111111100000011100011111111111111111111111111000",
+    "0011111111111000000111000111111111111111111111111111100",
+    "0001111111110000001110001111111111111111111111111111110",
+    "0001111111100000000110011111111111111111111111111111111",
+    "0000111111000000000000011111111111111111111111111100111",
+    "0000011110000000000000111111111111111111111111110000011",
+    "0000011100000000000001111111111111111111111110000000001",
+    "0000001100000000000011111111111111111111111000000000000",
+    "0000000110000000000011111111111111111111100000000111000",
+    "0000000011000000000001111111111111111111000000011111100",
+    "0000000011100000000000111111111111111110000000111111110",
+    "0000000001110000000000011111111111111000000011111111000",
+    "0000000000111000000000001111111111000000000001111100000",
+    "0000000000111100000000000111111100000000000000111000000",
+    "0000000000011100000000000011110000000000000000110000000",
+    "0000000000011000000000000001100000000000000000010000000",
+    "0000000000001000000000000000000000000000000000000000000",
+    "0000000000000000000000000000000000000000111000000000000",
+    "0000000000000000000000000000000000001111111000000000000"
+  ];
+  const ROWS=mask.length, COLS=mask[0].length, RAD=2;
+
+  function llToVec(latDeg,lonDeg,r){
+    const lat=latDeg*Math.PI/180, lon=lonDeg*Math.PI/180;
+    return new THREE.Vector3(
+      r*Math.cos(lat)*Math.cos(lon),
+      r*Math.sin(lat),
+      -r*Math.cos(lat)*Math.sin(lon)
+    );
+  }
+
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(42,1,0.1,100);
+  cam.position.set(0,0,6.2);
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  function size(){const s=host.clientWidth||420;renderer.setSize(s,s,false);cam.aspect=1;cam.updateProjectionMatrix();}
+  host.appendChild(renderer.domElement);
+  size();
+
+  const world=new THREE.Group(); scene.add(world);
+
+  const ocean=new THREE.Mesh(new THREE.SphereGeometry(RAD*0.985,48,48),
+    new THREE.MeshBasicMaterial({color:0x0e1b30,transparent:true,opacity:0.94}));
+  world.add(ocean);
+  const rim=new THREE.Mesh(new THREE.SphereGeometry(RAD*1.03,48,48),
+    new THREE.MeshBasicMaterial({color:0x5b9bd5,transparent:true,opacity:0.07,side:THREE.BackSide}));
+  world.add(rim);
+  const grat=new THREE.Mesh(new THREE.SphereGeometry(RAD*0.99,24,18),
+    new THREE.MeshBasicMaterial({color:0x5b9bd5,wireframe:true,transparent:true,opacity:0.06}));
+  world.add(grat);
+
+  // real coastlines (Natural Earth 110m, simplified)
+  const COAST=[[[-59.6,-80.0],[-59.9,-80.5],[-60.2,-81.0],[-62.3,-80.9],[-64.5,-80.9],[-65.7,-80.6],[-65.7,-80.5],[-66.3,-80.3],[-64.0,-80.3],[-61.9,-80.4],[-61.1,-80.0],[-60.6,-79.6],[-59.6,-80.0]],[[-159.2,-79.5],[-161.1,-79.6],[-162.4,-79.3],[-163.0,-78.9],[-163.1,-78.9],[-163.7,-78.6],[-163.7,-78.6],[-163.1,-78.2],[-161.2,-78.4],[-160.2,-78.7],[-159.5,-79.0],[-159.2,-79.5]],[[-45.2,-78.0],[-43.9,-78.5],[-43.5,-79.1],[-43.4,-79.5],[-43.3,-80.0],[-44.9,-80.3],[-46.5,-80.6],[-48.4,-80.8],[-50.5,-81.0],[-52.9,-81.0],[-54.2,-80.6],[-54.0,-80.2],[-51.9,-79.9],[-51.0,-79.6],[-50.4,-79.2],[-49.9,-78.8],[-49.3,-78.5],[-48.7,-78.0],[-48.7,-78.0],[-48.2,-78.0],[-46.7,-77.8],[-45.2,-78.0]],[[-121.2,-73.5],[-119.9,-73.7],[-118.7,-73.5],[-119.3,-73.8],[-120.2,-74.1],[-121.6,-74.0],[-122.6,-73.7],[-122.6,-73.7],[-122.4,-73.3],[-121.2,-73.5]],[[-125.6,-73.5],[-124.0,-73.9],[-124.6,-73.8],[-125.9,-73.7],[-127.3,-73.5],[-127.3,-73.5],[-126.6,-73.2],[-125.6,-73.5]],[[-99.0,-71.9],[-97.9,-72.1],[-96.8,-72.0],[-96.2,-72.5],[-97.0,-72.4],[-98.2,-72.5],[-99.4,-72.4],[-100.8,-72.5],[-101.8,-72.3],[-102.3,-71.9],[-102.3,-71.9],[-101.7,-71.7],[-100.4,-71.9],[-99.0,-71.9]],[[-68.5,-71.0],[-68.3,-71.4],[-68.5,-71.8],[-68.8,-72.2],[-70.0,-72.3],[-71.1,-72.5],[-72.4,-72.5],[-71.9,-72.1],[-73.1,-72.2],[-74.2,-72.4],[-75.0,-72.1],[-75.0,-71.7],[-73.9,-71.3],[-73.9,-71.3],[-73.2,-71.2],[-72.1,-71.2],[-71.8,-70.7],[-71.7,-70.3],[-71.7,-69.5],[-71.2,-69.0],[-70.3,-68.9],[-69.7,-69.3],[-69.5,-69.6],[-69.1,-70.1],[-68.7,-70.5],[-68.5,-71.0]],[[-58.6,-64.2],[-62.1,-66.2],[-64.0,-68.9],[-61.0,-72.8],[-67.2,-75.8],[-75.4,-77.3],[-76.6,-79.9],[-59.7,-82.4],[-44.8,-81.8],[-28.5,-80.3],[-35.3,-78.1],[-23.9,-76.2],[-16.5,-73.9],[-9.1,-71.3],[-1.8,-71.2],[7.1,-70.2],[14.7,-70.0],[22.6,-70.7],[32.0,-69.7],[38.6,-69.8],[46.5,-67.6],[53.6,-65.9],[60.6,-67.7],[68.9,-67.9],[68.4,-71.4],[73.3,-70.4],[80.1,-68.1],[87.5,-66.9],[94.2,-67.1],[101.6,-66.3],[110.2,-66.7],[117.4,-66.9],[126.1,-66.6],[134.8,-66.2],[139.9,-66.9],[147.7,-68.1],[156.8,-69.4],[166.1,-70.8],[169.8,-73.2],[163.6,-76.2],[163.7,-79.1],[163.7,-82.4],[178.3,-84.5],[-176.9,-84.3],[-170.0,-83.9],[-148.5,-85.6],[-153.0,-82.8],[-148.9,-81.0],[-156.0,-78.7],[-151.3,-77.4],[-144.3,-75.5],[-133.7,-74.4],[-121.1,-74.5],[-112.3,-74.7],[-100.6,-75.3],[-101.6,-72.8],[-91.4,-73.4],[-81.5,-73.9],[-72.8,-73.4],[-67.9,-70.9],[-67.7,-67.3],[-62.0,-64.6],[-58.6,-64.2],[-58.6,-64.2]],[[-67.8,-53.9],[-66.5,-54.5],[-65.0,-54.7],[-65.5,-55.2],[-66.5,-55.2],[-67.0,-54.9],[-67.3,-55.3],[-68.1,-55.6],[-69.2,-55.5],[-70.0,-55.2],[-71.0,-55.1],[-72.3,-54.5],[-73.3,-54.0],[-74.7,-52.8],[-73.8,-53.0],[-72.4,-53.7],[-71.1,-54.1],[-70.6,-53.6],[-70.3,-52.9],[-69.3,-52.5],[-68.6,-52.6],[-68.6,-52.6],[-68.2,-53.1],[-67.8,-53.9]],[[-58.5,-51.1],[-57.8,-51.5],[-58.0,-51.9],[-59.4,-52.2],[-59.9,-51.9],[-60.7,-52.3],[-61.2,-51.9],[-60,-51.2],[-59.1,-51.5],[-58.5,-51.1]],[[70.3,-49.7],[68.7,-49.8],[68.7,-49.2],[68.9,-48.8],[68.9,-48.6],[69.6,-48.9],[70.5,-49.1],[70.6,-49.3],[70.3,-49.7]],[[145.4,-40.8],[146.4,-41.1],[146.9,-41.0],[147.7,-40.8],[148.3,-40.9],[148.4,-42.1],[148.0,-42.4],[147.9,-43.2],[147.6,-42.9],[146.9,-43.6],[146.7,-43.6],[146.0,-43.5],[145.4,-42.7],[145.3,-42.0],[144.7,-41.2],[144.7,-40.7],[145.4,-40.8]],[[173.0,-40.9],[173.2,-41.3],[174.0,-40.9],[174.2,-41.3],[174.2,-41.8],[173.9,-42.2],[173.2,-43.0],[172.7,-43.4],[173.1,-43.9],[172.3,-43.9],[171.5,-44.2],[171.2,-44.9],[170.6,-45.9],[169.8,-46.4],[169.3,-46.6],[168.4,-46.6],[167.8,-46.3],[166.7,-46.2],[166.5,-45.9],[167.0,-45.1],[168.3,-44.1],[168.9,-43.9],[169.7,-43.6],[170.5,-43.0],[171.1,-42.5],[171.6,-41.8],[171.9,-41.5],[172.1,-41.0],[172.8,-40.5],[173.0,-40.9]],[[174.6,-36.2],[175.3,-37.2],[175.4,-36.5],[175.8,-36.8],[176.0,-37.6],[176.8,-37.9],[177.4,-38.0],[178.0,-37.6],[178.5,-37.7],[178.3,-38.6],[178.0,-39.2],[177.2,-39.1],[176.9,-39.4],[177.0,-39.9],[176.9,-40.1],[176.5,-40.6],[176.0,-41.3],[175.2,-41.7],[175.1,-41.4],[174.7,-41.3],[175.2,-40.5],[174.9,-39.9],[173.8,-39.5],[173.9,-39.1],[174.6,-38.8],[174.7,-38.0],[174.7,-37.4],[174.3,-36.7],[174.3,-36.5],[173.8,-36.1],[173.1,-35.2],[172.6,-34.5],[173.0,-34.5],[173.6,-35.0],[174.3,-35.3],[174.6,-36.2]],[[167.1,-22.2],[166.7,-22.4],[166.2,-22.1],[165.5,-21.7],[164.8,-21.1],[164.2,-20.4],[164.0,-20.1],[164.5,-20.1],[165.0,-20.5],[165.5,-20.8],[165.8,-21.1],[166.6,-21.7],[167.1,-22.2]],[[178.4,-17.3],[178.7,-17.6],[178.6,-18.2],[177.9,-18.3],[177.4,-18.2],[177.3,-17.7],[177.7,-17.4],[178.1,-17.5],[178.4,-17.3]],[[179.4,-16.8],[178.7,-17.0],[178.6,-16.6],[179.1,-16.4],[179.4,-16.4],[180,-16.1],[180,-16.6],[179.4,-16.8]],[[167.1,-14.9],[167.3,-15.7],[167.0,-15.6],[166.8,-15.7],[166.6,-15.4],[166.6,-14.6],[167.1,-14.9]],[[50.1,-13.6],[50.2,-14.8],[50.5,-15.2],[50.4,-15.7],[50.2,-16.0],[49.9,-15.4],[49.7,-15.7],[49.9,-16.5],[49.8,-16.9],[49.5,-17.1],[49.4,-18.0],[49.0,-19.1],[48.5,-20.5],[47.9,-22.4],[47.5,-23.8],[47.1,-24.9],[46.3,-25.2],[45.4,-25.6],[44.8,-25.3],[44.0,-25.0],[43.8,-24.5],[43.7,-23.6],[43.3,-22.8],[43.3,-22.1],[43.4,-21.3],[43.9,-21.2],[43.9,-20.8],[44.4,-20.1],[44.5,-19.4],[44.2,-19.0],[44.0,-18.3],[44.0,-17.4],[44.3,-16.9],[44.4,-16.2],[44.9,-16.2],[45.5,-16.0],[45.9,-15.8],[46.3,-15.8],[46.9,-15.2],[47.7,-14.6],[48.0,-14.1],[47.9,-13.7],[48.3,-13.8],[48.8,-13.1],[48.9,-12.5],[49.2,-12.0],[49.5,-12.5],[49.8,-12.9],[50.1,-13.6],[50.1,-13.6]],[[143.6,-13.8],[144.9,-14.6],[145.5,-16.3],[146.2,-17.8],[147.5,-19.5],[148.7,-20.6],[150.1,-22.1],[150.9,-23.5],[152.9,-25.3],[153.1,-27.3],[153.3,-29.5],[152.9,-31.6],[151.3,-33.8],[150.3,-35.7],[150.0,-37.4],[147.4,-38.2],[145.5,-38.6],[144.5,-38.1],[142.2,-38.4],[140.0,-37.4],[139.1,-35.7],[138.2,-34.4],[137.4,-34.7],[137.8,-32.9],[136.0,-34.9],[134.6,-33.2],[133.0,-32.0],[129.5,-31.6],[126.1,-32.2],[124.0,-33.5],[122.2,-34.0],[119.9,-34.0],[118.5,-34.7],[116.6,-35.0],[115.0,-33.6],[115.7,-32.9],[115.2,-30.6],[114.6,-28.8],[114.0,-27.3],[113.8,-26.5],[114.2,-26.3],[113.6,-24.7],[113.7,-23.6],[114.1,-21.8],[115.5,-21.5],[117.2,-20.6],[118.8,-20.3],[119.8,-20.0],[121.7,-18.7],[122.3,-17.3],[123.9,-17.1],[124.3,-16.3],[125.2,-14.7],[126.1,-14.3],[127.1,-13.8],[129.0,-14.9],[129.9,-13.6],[130.6,-12.5],[132.6,-12.1],[132.4,-11.1],[134.4,-12.0],[135.9,-12.0],[137.0,-12.4],[136.0,-13.3],[135.4,-14.7],[137.1,-15.9],[138.6,-16.8],[140.2,-17.7],[141.3,-16.4],[141.6,-14.6],[141.7,-12.9],[141.9,-11.9],[142.5,-10.7],[143.1,-11.9],[143.6,-13.4],[143.6,-13.8]],[[162.1,-10.5],[162.4,-10.8],[161.7,-10.8],[161.3,-10.2],[161.9,-10.4],[162.1,-10.5]],[[120.7,-10.2],[120.3,-10.3],[119.0,-9.6],[119.9,-9.4],[120.4,-9.7],[120.8,-10.0],[120.7,-10.2]],[[160.9,-9.9],[160.5,-9.9],[159.8,-9.8],[159.6,-9.6],[159.7,-9.2],[160.4,-9.4],[160.7,-9.6],[160.9,-9.9]],[[161.7,-9.6],[161.5,-9.8],[160.8,-8.9],[160.6,-8.3],[160.9,-8.3],[161.3,-9.1],[161.7,-9.6]],[[124.4,-10.1],[123.6,-10.4],[123.5,-10.2],[123.6,-9.9],[124.0,-9.3],[125.0,-8.9],[125.1,-8.7],[125.9,-8.4],[126.6,-8.4],[127.0,-8.3],[127.3,-8.4],[127.0,-8.7],[125.9,-9.1],[125.1,-9.4],[124.4,-10.1]],[[117.9,-8.1],[118.3,-8.4],[118.9,-8.3],[119.1,-8.7],[118.0,-8.9],[117.3,-9.0],[116.7,-9.0],[117.1,-8.5],[117.6,-8.4],[117.9,-8.1]],[[122.9,-8.1],[122.8,-8.6],[121.3,-8.9],[119.9,-8.8],[119.9,-8.4],[120.7,-8.2],[121.3,-8.5],[122.0,-8.5],[122.9,-8.1]],[[159.9,-8.3],[159.9,-8.5],[159.1,-8.1],[158.6,-7.8],[158.2,-7.4],[158.4,-7.3],[158.8,-7.6],[159.6,-8.0],[159.9,-8.3]],[[157.5,-7.3],[157.3,-7.4],[156.9,-7.2],[156.5,-6.8],[156.5,-6.6],[157.1,-7.0],[157.5,-7.3]],[[108.6,-6.8],[110.5,-6.9],[110.8,-6.5],[112.6,-6.9],[113.0,-7.6],[114.5,-7.8],[115.7,-8.4],[114.6,-8.8],[113.5,-8.3],[112.6,-8.4],[111.5,-8.3],[110.6,-8.1],[109.4,-7.7],[108.7,-7.6],[108.3,-7.8],[106.5,-7.4],[106.3,-6.9],[105.4,-6.9],[106.1,-5.9],[107.3,-6.0],[108.1,-6.3],[108.5,-6.4],[108.6,-6.8]],[[134.7,-6.2],[134.2,-6.9],[134.1,-6.1],[134.3,-5.8],[134.5,-5.4],[134.7,-5.7],[134.7,-6.2]],[[155.9,-6.8],[155.6,-6.9],[155.2,-6.5],[154.7,-5.9],[154.5,-5.1],[154.7,-5.0],[154.8,-5.3],[155.1,-5.6],[155.5,-6.2],[156.0,-6.5],[155.9,-6.8]],[[152.0,-5.5],[151.5,-5.6],[151.3,-5.8],[150.8,-6.1],[150.2,-6.3],[149.7,-6.3],[148.9,-6.0],[148.3,-5.7],[148.4,-5.4],[149.3,-5.6],[149.8,-5.5],[150.0,-5.0],[150.1,-5.0],[150.2,-5.5],[150.8,-5.5],[151.1,-5.1],[151.6,-4.8],[151.5,-4.2],[152.1,-4.1],[152.3,-4.3],[152.3,-4.9],[152.0,-5.5]],[[127.2,-3.5],[126.9,-3.8],[126.2,-3.6],[126.0,-3.2],[127.0,-3.1],[127.2,-3.5]],[[130.5,-3.1],[130.8,-3.9],[130.0,-3.4],[129.2,-3.4],[128.6,-3.4],[127.9,-3.4],[128.1,-2.8],[129.4,-2.8],[130.5,-3.1]],[[153.1,-4.5],[152.8,-4.8],[152.6,-4.2],[152.4,-3.8],[152.0,-3.5],[151.4,-3.0],[150.7,-2.7],[150.9,-2.5],[151.5,-2.8],[151.8,-3.0],[152.2,-3.2],[152.6,-3.7],[153.0,-4.0],[153.1,-4.5]],[[134.1,-1.2],[134.4,-2.8],[135.5,-3.4],[136.3,-2.3],[137.4,-1.7],[138.3,-1.7],[139.2,-2.1],[139.9,-2.4],[141.0,-2.6],[142.7,-3.3],[144.6,-3.9],[145.3,-4.4],[145.8,-4.9],[146.0,-5.5],[147.6,-6.1],[147.9,-6.6],[147.0,-6.7],[147.2,-7.4],[148.1,-8.0],[148.7,-9.1],[149.3,-9.1],[149.3,-9.5],[150.0,-9.7],[149.7,-9.9],[150.8,-10.3],[150.7,-10.6],[150.0,-10.7],[149.8,-10.4],[148.9,-10.3],[147.9,-10.1],[147.1,-9.5],[146.6,-8.9],[146.0,-8.1],[144.7,-7.6],[143.9,-7.9],[143.3,-8.2],[143.4,-9.0],[142.6,-9.3],[142.1,-9.2],[141.0,-9.1],[140.1,-8.3],[139.1,-8.1],[138.9,-8.4],[137.6,-8.4],[138.0,-7.6],[138.7,-7.3],[138.4,-6.2],[137.9,-5.4],[136.0,-4.5],[135.2,-4.5],[133.7,-3.5],[133.4,-4.0],[133.0,-4.1],[132.8,-3.7],[132.8,-3.3],[132.0,-2.8],[133.1,-2.5],[133.8,-2.5],[133.7,-2.2],[132.2,-2.2],[131.8,-1.6],[130.9,-1.4],[130.5,-0.9],[131.9,-0.7],[132.4,-0.4],[134.0,-0.8],[134.1,-1.2],[134.1,-1.2]],[[125.2,1.4],[124.4,0.4],[123.7,0.2],[122.7,0.4],[121.1,0.4],[120.2,0.2],[120.0,-0.5],[120.9,-1.4],[121.5,-1.0],[123.3,-0.6],[123.3,-1.1],[122.8,-0.9],[122.4,-1.5],[121.5,-1.9],[122.5,-3.2],[122.3,-3.5],[123.2,-4.7],[123.2,-5.3],[122.6,-5.6],[122.2,-5.3],[122.7,-4.5],[121.7,-4.9],[121.5,-4.6],[121.6,-4.2],[120.9,-3.6],[121.0,-2.6],[120.3,-2.9],[120.4,-4.1],[120.4,-5.5],[119.8,-5.7],[119.4,-5.4],[119.7,-4.5],[119.5,-3.5],[119.1,-3.5],[118.8,-2.8],[119.2,-2.1],[119.3,-1.4],[119.8,0.2],[120.0,0.6],[120.9,1.3],[121.7,1.0],[122.9,0.9],[124.1,0.9],[125.1,1.6],[125.2,1.4],[125.2,1.4]],[[128.7,1.1],[128.6,0.3],[128.1,0.4],[128.0,-0.3],[128.4,-0.8],[128.1,-0.9],[127.7,-0.3],[127.4,1.0],[127.6,1.8],[127.9,2.2],[128.0,1.6],[128.6,1.5],[128.7,1.1]],[[105.8,-5.9],[104.7,-5.9],[103.9,-5.0],[102.6,-4.2],[102.2,-3.6],[101.4,-2.8],[100.9,-2.1],[100.1,-0.7],[99.3,0.2],[99.0,1.0],[98.6,1.8],[97.7,2.5],[97.2,3.3],[96.4,3.9],[95.4,5.0],[95.3,5.5],[95.9,5.4],[97.5,5.2],[98.4,4.3],[99.1,3.6],[99.7,3.2],[100.6,2.1],[101.7,2.1],[102.5,1.4],[103.1,0.6],[103.8,0.1],[103.4,-0.7],[104.0,-1.1],[104.4,-1.1],[104.5,-1.8],[104.9,-2.3],[105.6,-2.4],[106.1,-3.1],[105.9,-4.3],[105.8,-5.9]],[[117.9,1.8],[119.0,0.9],[117.8,0.8],[117.5,0.1],[117.5,-0.8],[116.6,-1.5],[116.5,-2.5],[116.1,-4.0],[116.0,-3.7],[114.9,-4.1],[114.5,-3.5],[113.8,-3.4],[113.3,-3.1],[112.1,-3.5],[111.7,-3.0],[111.0,-3.0],[110.2,-2.9],[110.1,-1.6],[109.6,-1.3],[109.1,-0.5],[109.0,0.4],[109.1,1.3],[109.7,2.0],[110.4,1.7],[111.2,1.9],[111.4,2.7],[111.8,2.9],[113.0,3.1],[113.7,3.9],[114.2,4.5],[114.6,4.9],[115.5,5.4],[116.2,6.1],[116.7,6.9],[117.1,6.9],[117.6,6.4],[117.7,6.0],[118.3,5.7],[119.2,5.4],[119.1,5.0],[118.4,5.0],[118.6,4.5],[117.9,4.1],[117.3,3.2],[118.0,2.3],[117.9,1.8],[117.9,1.8]],[[126.4,8.4],[126.5,7.8],[126.5,7.2],[126.2,6.3],[125.8,7.3],[125.4,6.8],[125.7,6.0],[125.4,5.6],[124.2,6.2],[123.9,6.9],[124.2,7.4],[123.6,7.8],[123.3,7.4],[122.8,7.5],[122.1,6.9],[121.9,7.2],[122.3,8.0],[122.9,8.3],[123.5,8.7],[123.8,8.2],[124.6,8.5],[124.8,9.0],[125.5,9.0],[125.4,9.8],[126.2,9.3],[126.3,8.8],[126.4,8.4]],[[81.2,6.2],[80.3,6.0],[79.9,6.8],[79.7,8.2],[80.1,9.8],[80.8,9.3],[81.3,8.6],[81.8,7.5],[81.6,6.5],[81.2,6.2]],[[-60.9,10.1],[-61.8,10],[-62.0,10.1],[-61.7,10.4],[-61.7,10.8],[-61.1,10.9],[-60.9,10.9],[-60.9,10.1]],[[124.0,10.3],[123.6,10.0],[123.3,9.3],[123.0,9.0],[122.4,9.7],[122.6,10.0],[122.8,10.3],[122.9,10.9],[123.5,10.9],[123.3,10.3],[124.1,11.2],[124.0,10.3]],[[118.5,9.3],[117.2,8.4],[117.7,9.1],[118.4,9.7],[119.0,10.4],[119.5,11.4],[119.7,10.6],[119.0,10.0],[118.5,9.3]],[[121.9,11.9],[122.5,11.6],[123.1,11.6],[123.1,11.2],[122.6,10.7],[122.0,10.4],[122.0,10.9],[122.0,11.4],[121.9,11.9]],[[125.5,12.2],[125.8,11.0],[125.0,11.3],[125.0,11.0],[125.3,10.4],[124.8,10.1],[124.8,10.8],[124.5,10.9],[124.3,11.5],[124.9,11.4],[124.9,11.8],[124.3,12.6],[125.2,12.5],[125.5,12.2]],[[121.5,13.1],[121.3,12.2],[120.8,12.7],[120.3,13.5],[121.2,13.4],[121.5,13.1]],[[121.3,18.5],[121.9,18.2],[122.2,18.5],[122.3,18.2],[122.2,17.8],[122.5,17.1],[122.3,16.3],[121.7,15.9],[121.5,15.1],[121.7,14.3],[122.3,14.2],[122.7,14.3],[124.0,13.8],[123.9,13.2],[124.2,13.0],[124.1,12.5],[123.3,13.0],[122.9,13.6],[122.7,13.2],[122.0,13.8],[121.1,13.6],[120.6,13.9],[120.7,14.3],[121.0,14.5],[120.7,14.8],[120.6,14.4],[120.1,15.0],[119.9,15.4],[119.9,16.4],[120.3,16.0],[120.4,17.6],[120.7,18.5],[121.3,18.5]],[[-65.6,18.2],[-65.8,18.0],[-66.6,18.0],[-67.2,17.9],[-67.2,18.4],[-67.1,18.5],[-66.3,18.5],[-65.8,18.4],[-65.6,18.2]],[[-76.9,17.9],[-77.2,17.7],[-77.8,17.9],[-78.3,18.2],[-78.2,18.5],[-77.8,18.5],[-77.6,18.5],[-76.9,18.4],[-76.4,18.2],[-76.2,17.9],[-76.9,17.9]],[[-72.6,19.9],[-71.7,19.7],[-71.6,19.9],[-70.8,19.9],[-70.2,19.6],[-70.0,19.6],[-69.8,19.3],[-69.2,19.3],[-69.3,19.0],[-68.8,19.0],[-68.3,18.6],[-68.7,18.2],[-69.2,18.4],[-69.6,18.4],[-70.0,18.4],[-70.1,18.2],[-70.5,18.2],[-70.7,18.4],[-71.0,18.3],[-71.4,17.6],[-71.7,17.8],[-71.7,18.0],[-72.4,18.2],[-72.8,18.1],[-73.5,18.2],[-73.9,18.0],[-74.5,18.3],[-74.4,18.7],[-73.4,18.5],[-72.7,18.4],[-72.3,18.7],[-72.8,19.1],[-72.8,19.5],[-73.4,19.6],[-73.2,19.9],[-72.6,19.9]],[[110.3,18.7],[109.5,18.2],[108.7,18.5],[108.6,19.4],[109.1,19.8],[110.2,20.1],[110.8,20.1],[111.0,19.7],[110.6,19.3],[110.3,18.7]],[[-155.5,19.1],[-155.7,18.9],[-155.9,19.1],[-155.9,19.3],[-156.1,19.7],[-156.0,19.8],[-155.9,20.0],[-155.9,20.2],[-155.9,20.3],[-155.8,20.2],[-155.4,20.1],[-155.2,20.0],[-155.1,19.9],[-154.8,19.5],[-154.8,19.5],[-155.2,19.2],[-155.5,19.1]],[[-156.1,20.6],[-156.4,20.6],[-156.6,20.8],[-156.7,20.9],[-156.7,20.9],[-156.6,21.0],[-156.3,20.9],[-156.0,20.8],[-156.1,20.6]],[[-157.7,21.3],[-157.7,21.3],[-157.8,21.3],[-158.1,21.3],[-158.3,21.5],[-158.3,21.6],[-158.0,21.7],[-157.9,21.7],[-157.7,21.3]],[[-159.3,22.0],[-159.5,21.9],[-159.8,22.1],[-159.7,22.1],[-159.6,22.2],[-159.4,22.2],[-159.3,22.0]],[[-79.7,22.8],[-79.3,22.4],[-78.3,22.5],[-78.0,22.3],[-77.1,21.7],[-76.5,21.2],[-76.2,21.2],[-75.6,21.0],[-75.7,20.7],[-74.9,20.7],[-74.2,20.3],[-74.3,20.1],[-75.0,19.9],[-75.6,19.9],[-76.3,20.0],[-77.8,19.9],[-77.1,20.4],[-77.5,20.7],[-78.1,20.7],[-78.5,21.0],[-78.7,21.6],[-79.3,21.6],[-80.2,21.8],[-80.5,22.0],[-81.8,22.2],[-82.2,22.4],[-81.8,22.6],[-82.8,22.7],[-83.5,22.2],[-83.9,22.2],[-84.1,21.9],[-84.5,21.8],[-85.0,21.9],[-84.4,22.2],[-84.2,22.6],[-83.8,22.8],[-83.3,23.0],[-82.5,23.1],[-82.3,23.2],[-81.4,23.1],[-80.6,23.1],[-79.7,22.8],[-79.7,22.8]],[[-77.5,23.8],[-77.8,23.7],[-78.0,24.3],[-78.4,24.6],[-78.2,25.2],[-77.9,25.2],[-77.5,24.3],[-77.5,23.8]],[[121.2,22.8],[120.7,22.0],[120.2,22.8],[120.1,23.6],[120.7,24.5],[121.5,25.3],[122.0,25.0],[121.8,24.4],[121.2,22.8]],[[-77.8,26.6],[-78.9,26.4],[-79.0,26.8],[-78.5,26.9],[-77.8,26.8],[-77.8,26.6]],[[-77,26.6],[-77.2,25.9],[-77.4,26.0],[-77.3,26.5],[-77.8,26.9],[-77.8,27.0],[-77,26.6]],[[134.6,34.1],[134.8,33.8],[134.2,33.2],[133.8,33.5],[133.3,33.3],[133.0,32.7],[132.4,33.0],[132.4,33.5],[132.9,34.1],[133.5,33.9],[133.9,34.4],[134.6,34.1]],[[34.6,35.7],[33.9,35.2],[34.0,35.1],[34.0,35.0],[33.0,34.6],[32.5,34.7],[32.3,35.1],[32.7,35.1],[32.8,35.1],[32.9,35.4],[33.7,35.4],[34.6,35.7]],[[23.7,35.7],[24.2,35.4],[25.0,35.4],[25.8,35.4],[25.7,35.2],[26.3,35.3],[26.2,35.0],[24.7,34.9],[24.7,35.1],[23.5,35.3],[23.7,35.7]],[[15.5,38.2],[15.2,37.4],[15.3,37.1],[15.1,36.6],[14.3,37.0],[13.8,37.1],[12.4,37.6],[12.6,38.1],[13.7,38.0],[14.8,38.1],[15.5,38.2]],[[9.2,41.2],[9.8,40.5],[9.7,39.2],[9.2,39.2],[8.8,38.9],[8.4,39.2],[8.4,40.4],[8.2,41.0],[8.7,40.9],[9.2,41.2]],[[141.0,37.1],[140.6,36.3],[140.8,35.8],[140.3,35.1],[139.0,34.7],[137.2,34.6],[135.8,33.5],[135.1,33.8],[135.1,34.6],[133.3,34.4],[132.2,33.9],[131.0,33.9],[132.0,33.1],[131.3,31.5],[130.7,31.0],[130.2,31.4],[130.4,32.3],[129.8,32.6],[129.4,33.3],[130.4,33.6],[130.9,34.2],[131.9,34.7],[132.6,35.4],[134.6,35.7],[135.7,35.5],[136.7,37.3],[137.4,36.8],[138.9,37.8],[139.4,38.2],[140.1,39.4],[139.9,40.6],[140.3,41.2],[141.4,41.4],[141.9,40.0],[141.9,39.2],[141.0,38.2],[141.0,37.1]],[[9.6,42.2],[9.2,41.4],[8.8,41.6],[8.5,42.3],[8.7,42.6],[9.4,43.0],[9.6,42.2]],[[143.9,44.2],[144.6,44.0],[145.3,44.4],[145.5,43.3],[144.1,43.0],[143.2,42.0],[141.6,42.7],[141.1,41.6],[140.0,41.6],[139.8,42.6],[140.3,43.3],[141.4,43.4],[141.7,44.8],[142.0,45.6],[143.1,44.5],[143.9,44.2]],[[-63.7,46.6],[-62.9,46.4],[-62.0,46.4],[-62.5,46.0],[-62.9,46.0],[-64.1,46.4],[-64.4,46.7],[-64.0,47.0],[-63.7,46.6]],[[-61.8,49.1],[-62.3,49.1],[-63.6,49.4],[-64.5,49.9],[-64.2,50.0],[-62.9,49.7],[-61.8,49.3],[-61.8,49.1]],[[-123.5,48.5],[-124.0,48.4],[-125.7,48.8],[-126.0,49.2],[-126.9,49.5],[-127.0,49.8],[-128.1,50.0],[-128.4,50.5],[-128.4,50.8],[-127.3,50.6],[-126.7,50.4],[-125.8,50.3],[-125.4,50.0],[-124.9,49.5],[-123.9,49.1],[-123.5,48.5]],[[-56.1,50.7],[-56.8,49.8],[-56.1,50.2],[-55.5,49.9],[-55.8,49.6],[-54.9,49.3],[-54.5,49.6],[-53.5,49.2],[-53.8,48.5],[-53.1,48.7],[-53.0,48.2],[-52.6,47.5],[-53.1,46.7],[-53.5,46.6],[-54.2,46.8],[-54.0,47.6],[-54.2,47.8],[-55.4,46.9],[-56.0,46.9],[-55.3,47.4],[-56.3,47.6],[-57.3,47.6],[-59.3,47.6],[-59.4,47.9],[-58.8,48.3],[-59.2,48.5],[-58.4,49.1],[-57.4,50.7],[-56.7,51.3],[-55.9,51.6],[-55.4,51.6],[-55.6,51.3],[-56.1,50.7]],[[-132.7,54.0],[-132.7,54.0],[-132.7,54.0],[-132.7,54.0],[-131.7,54.1],[-132.0,53.0],[-131.2,52.2],[-131.6,52.2],[-132.2,52.6],[-132.5,53.1],[-133.1,53.4],[-133.2,53.9],[-133.2,54.2],[-132.7,54.0]],[[143.6,50.7],[144.7,49.0],[143.2,49.3],[142.6,47.9],[143.5,46.8],[143.5,46.1],[142.7,46.7],[142.1,46.0],[141.9,46.8],[142.0,47.8],[141.9,48.9],[142.1,49.6],[142.2,51.0],[141.6,51.9],[141.7,53.3],[142.6,53.8],[142.2,54.2],[142.7,54.4],[142.9,53.7],[143.3,52.7],[143.2,51.8],[143.6,50.7]],[[-6.8,52.3],[-8.6,51.7],[-10.0,51.8],[-9.2,52.9],[-9.7,53.9],[-8.3,54.7],[-7.6,55.1],[-6.7,55.2],[-5.7,54.6],[-6.2,53.9],[-6.0,53.2],[-6.8,52.3]],[[12.7,55.6],[12.1,54.8],[11.0,55.4],[10.9,55.8],[12.4,56.1],[12.7,55.6]],[[-153.0,57.1],[-154.0,56.7],[-154.5,57.0],[-154.7,57.5],[-153.8,57.8],[-153.2,58.0],[-152.6,57.9],[-152.1,57.6],[-153.0,57.1]],[[-3.0,58.6],[-4.1,57.6],[-3.1,57.7],[-2.0,57.7],[-2.2,56.9],[-3.1,56.0],[-2.1,55.9],[-1.1,54.6],[-0.4,54.5],[0.2,53.3],[0.5,52.9],[1.7,52.7],[1.6,52.1],[1.1,51.8],[1.4,51.3],[0.6,50.8],[-0.8,50.8],[-2.5,50.5],[-3.0,50.7],[-3.6,50.2],[-4.5,50.3],[-5.2,50.0],[-5.8,50.2],[-4.3,51.2],[-3.4,51.4],[-5.0,51.6],[-5.3,52.0],[-4.2,52.3],[-4.8,52.8],[-4.6,53.5],[-3.1,53.4],[-2.9,54.0],[-3.6,54.6],[-4.8,54.8],[-5.1,55.1],[-4.7,55.5],[-5.0,55.8],[-5.6,55.3],[-5.6,56.3],[-6.1,56.8],[-5.8,57.8],[-5.0,58.6],[-4.2,58.6],[-3.0,58.6],[-3.0,58.6]],[[-165.6,59.9],[-166.2,59.8],[-166.8,59.9],[-167.5,60.2],[-166.5,60.4],[-165.7,60.3],[-165.6,59.9]],[[-79.3,62.2],[-79.7,61.6],[-80.1,61.7],[-80.4,62.0],[-80.3,62.1],[-79.9,62.4],[-79.5,62.4],[-79.3,62.2]],[[-81.9,62.7],[-83.1,62.2],[-83.8,62.2],[-84.0,62.5],[-83.3,62.9],[-81.9,62.9],[-81.9,62.7]],[[-171.7,63.8],[-171.1,63.6],[-170.5,63.7],[-169.7,63.4],[-168.7,63.3],[-168.8,63.2],[-169.5,63.0],[-170.3,63.2],[-170.7,63.4],[-171.6,63.3],[-171.8,63.4],[-171.7,63.8]],[[-85.2,65.7],[-85.0,65.2],[-84.5,65.4],[-83.9,65.1],[-82.8,64.8],[-81.6,64.5],[-81.6,64.0],[-80.8,64.1],[-80.1,63.7],[-81.0,63.4],[-82.5,63.7],[-83.1,64.1],[-84.1,63.6],[-85.5,63.1],[-85.9,63.6],[-87.2,63.5],[-86.4,64.0],[-86.2,64.8],[-85.9,65.7],[-85.2,65.7]],[[-14.5,66.5],[-14.7,65.8],[-13.6,65.1],[-14.9,64.4],[-17.8,63.7],[-18.7,63.5],[-20.0,63.6],[-22.8,64.0],[-21.8,64.4],[-24.0,64.9],[-22.2,65.1],[-22.2,65.4],[-24.3,65.6],[-23.7,66.3],[-22.1,66.4],[-20.6,65.7],[-19.1,66.3],[-17.8,66.0],[-16.2,66.5],[-14.5,66.5]],[[-75.9,67.1],[-77.0,67.1],[-77.2,67.6],[-76.8,68.1],[-75.9,68.3],[-75.1,68.0],[-75.1,67.6],[-75.2,67.4],[-75.9,67.1]],[[-175.0,66.6],[-174.3,66.3],[-174.6,67.1],[-171.9,66.9],[-169.9,66.0],[-170.9,65.5],[-172.5,65.4],[-172.6,64.5],[-173.0,64.3],[-173.9,64.3],[-174.7,64.6],[-176.0,64.9],[-176.2,65.4],[-177.2,65.5],[-178.4,65.4],[-178.9,65.7],[-178.7,66.1],[-179.9,65.9],[-179.4,65.4],[-180,65.0],[-180,69.0],[-177.6,68.2],[-174.9,67.2],[-175.0,66.6]],[[-95.6,69.1],[-96.3,68.8],[-97.6,69.1],[-98.4,69.0],[-99.8,69.4],[-98.9,69.7],[-98.2,70.1],[-97.2,69.9],[-96.6,69.7],[-96.3,69.5],[-95.6,69.1]],[[-178.7,70.9],[-180,70.8],[-180,71.5],[-179.9,71.6],[-179.0,71.6],[-177.6,71.3],[-177.7,71.1],[-178.7,70.9]],[[-90.5,69.5],[-81.4,67.1],[-94.7,58.9],[-79.9,51.2],[-75.7,62.3],[-62.5,58.2],[-61.7,50.1],[-64.5,46.2],[-67.0,44.8],[-72.3,41.3],[-75.3,39.0],[-75.9,36.6],[-80.5,28.0],[-84.1,30.1],[-90.9,29.1],[-97.5,25.0],[-91.4,18.9],[-87.8,18.3],[-88.5,15.9],[-84.5,15.9],[-83.7,11.9],[-79.9,9.3],[-74.2,11.3],[-71.0,9.9],[-64.3,10.6],[-57.1,6.0],[-50.4,-0.1],[-35.2,-5.5],[-40.8,-20.9],[-50.7,-31.0],[-56.7,-36.4],[-63.8,-42.0],[-69.1,-50.7],[-75.6,-48.7],[-73.6,-37.2],[-71.5,-17.4],[-81.1,-4.0],[-78.6,1.8],[-78.4,8.4],[-81.7,8.1],[-84.9,9.8],[-87.4,12.9],[-93.9,15.9],[-105.0,19.3],[-109.3,26.4],[-114.8,30.9],[-110.7,24.3],[-113.6,26.6],[-117.9,33.6],[-124.2,41.1],[-124.9,50.0],[-136.6,58.2],[-151.4,60.7],[-161.2,55.4],[-158.2,58.6],[-166.1,61.5],[-163.5,64.6],[-166.2,68.9],[-149.7,70.5],[-129.1,69.8],[-115.3,67.9],[-98.4,67.8],[-92.4,69.7],[-90.5,69.5]],[[-114.2,73.1],[-114.7,72.7],[-112.4,73.0],[-111.1,72.5],[-109.9,73.0],[-109.0,72.6],[-108.2,71.7],[-107.7,72.1],[-108.4,73.1],[-107.5,73.2],[-106.5,73.1],[-105.4,72.7],[-104.8,71.7],[-104.5,71.0],[-102.8,70.5],[-101.0,70.0],[-101.1,69.6],[-102.7,69.5],[-102.1,69.1],[-102.4,68.8],[-104.2,68.9],[-106.0,69.2],[-107.1,69.1],[-109,68.8],[-112.0,68.6],[-113.3,68.5],[-113.9,69.0],[-115.2,69.3],[-116.1,69.2],[-117.3,70.0],[-116.7,70.1],[-115.1,70.2],[-113.7,70.2],[-112.4,70.4],[-114.3,70.6],[-116.5,70.5],[-117.9,70.5],[-118.4,70.9],[-116.1,71.3],[-117.7,71.3],[-119.4,71.6],[-118.6,72.3],[-117.9,72.7],[-115.2,73.3],[-114.2,73.1],[-114.2,73.1]],[[-104.5,73.4],[-105.4,72.8],[-106.9,73.5],[-106.6,73.6],[-105.3,73.6],[-104.5,73.4]],[[-76.3,73.1],[-76.3,72.8],[-77.3,72.9],[-78.4,72.9],[-79.5,72.7],[-79.8,72.8],[-80.9,73.3],[-80.8,73.7],[-80.4,73.8],[-78.1,73.7],[-76.3,73.1]],[[-86.6,73.2],[-85.8,72.5],[-84.9,73.3],[-82.3,73.8],[-80.6,72.7],[-80.7,72.1],[-78.8,72.4],[-77.8,72.7],[-75.6,72.2],[-74.2,71.8],[-74.1,71.3],[-72.2,71.6],[-71.2,70.9],[-68.8,70.5],[-67.9,70.1],[-67.0,69.2],[-68.8,68.7],[-66.4,68.1],[-64.9,67.8],[-63.4,66.9],[-61.9,66.9],[-62.2,66.2],[-63.9,65.0],[-65.1,65.4],[-66.7,66.4],[-68.0,66.3],[-68.1,65.7],[-67.1,65.1],[-65.7,64.6],[-65.3,64.4],[-64.7,63.4],[-65.0,62.7],[-66.3,62.9],[-68.8,63.7],[-67.4,62.9],[-66.3,62.3],[-66.2,61.9],[-68.9,62.3],[-71.0,62.9],[-72.2,63.4],[-71.9,63.7],[-73.4,64.2],[-74.8,64.7],[-74.8,64.4],[-77.7,64.2],[-78.6,64.6],[-77.9,65.3],[-76.0,65.3],[-74.0,65.5],[-74.3,65.8],[-73.9,66.3],[-72.7,67.3],[-72.9,67.7],[-73.3,68.1],[-74.8,68.6],[-76.9,68.9],[-76.2,69.1],[-77.3,69.8],[-78.2,69.8],[-79.0,70.2],[-79.5,69.9],[-81.3,69.7],[-84.9,70.0],[-87.1,70.3],[-88.7,70.4],[-89.5,70.8],[-88.5,71.2],[-89.9,71.2],[-90.2,72.2],[-89.4,73.1],[-88.4,73.5],[-85.8,73.8],[-86.6,73.2],[-86.6,73.2]],[[-100.4,73.8],[-99.2,73.6],[-97.4,73.8],[-97.1,73.5],[-98.1,73.0],[-96.5,72.6],[-96.7,71.7],[-98.4,71.3],[-99.3,71.4],[-100.0,71.7],[-102.5,72.5],[-102.5,72.8],[-100.4,72.7],[-101.5,73.4],[-100.4,73.8]],[[143.6,73.2],[142.1,73.2],[140.0,73.3],[139.9,73.4],[140.8,73.8],[142.1,73.9],[143.5,73.5],[143.6,73.2]],[[-93.2,72.8],[-94.3,72.0],[-95.4,72.1],[-96.0,72.9],[-96.0,73.4],[-95.5,73.9],[-94.5,74.1],[-92.4,74.1],[-90.5,73.9],[-92.0,73.0],[-93.2,72.8]],[[-120.5,71.4],[-123.1,70.9],[-123.6,71.3],[-125.9,71.9],[-125.6,72.2],[-124.8,73.0],[-123.9,73.7],[-124.9,74.3],[-121.5,74.4],[-120.1,74.2],[-117.6,74.2],[-116.6,73.9],[-115.5,73.5],[-116.8,73.2],[-119.2,72.5],[-120.5,71.8],[-120.5,71.4]],[[150.7,75.1],[149.6,74.7],[148.0,74.8],[146.1,75.2],[146.4,75.5],[148.2,75.3],[150.7,75.1]],[[-93.6,75.0],[-94.2,74.6],[-95.6,74.7],[-96.8,74.9],[-96.3,75.4],[-94.9,75.6],[-94.0,75.3],[-93.6,75.0]],[[145.1,75.6],[144.3,74.8],[140.6,74.8],[139.0,74.6],[137.0,75.3],[137.5,75.9],[138.8,76.1],[141.5,76.1],[145.1,75.6]],[[-98.5,76.7],[-97.7,76.3],[-97.7,75.7],[-98.2,75],[-99.8,74.9],[-100.9,75.1],[-100.9,75.6],[-102.5,75.6],[-102.6,76.3],[-101.5,76.3],[-100.0,76.6],[-98.6,76.6],[-98.5,76.7]],[[-108.2,76.2],[-107.8,75.8],[-106.9,76.0],[-105.9,76.0],[-105.7,75.5],[-106.3,75.0],[-109.7,74.8],[-112.2,74.4],[-113.7,74.4],[-113.9,74.7],[-111.8,75.2],[-116.3,75.0],[-117.7,75.2],[-116.3,76.2],[-115.4,76.5],[-112.6,76.1],[-110.8,75.5],[-109.1,75.5],[-110.5,76.4],[-109.6,76.8],[-108.5,76.7],[-108.2,76.2]],[[57.5,70.7],[56.9,70.6],[53.7,70.8],[53.4,71.2],[51.6,71.5],[51.5,72.0],[52.5,72.2],[52.4,72.8],[54.4,73.6],[53.5,73.7],[55.9,74.6],[55.6,75.1],[57.9,75.6],[61.2,76.3],[64.5,76.4],[66.2,76.8],[68.2,76.9],[68.9,76.5],[68.2,76.2],[64.6,75.7],[61.6,75.3],[58.5,74.3],[57.0,73.3],[55.4,72.4],[55.6,71.5],[57.5,70.7]],[[-94.7,77.1],[-93.6,76.8],[-91.6,76.8],[-90.7,76.4],[-91.0,76.1],[-89.8,75.8],[-89.2,75.6],[-87.8,75.6],[-86.4,75.5],[-84.8,75.7],[-82.8,75.8],[-81.1,75.7],[-80.1,75.3],[-79.8,74.9],[-80.5,74.7],[-81.9,74.4],[-83.2,74.6],[-86.1,74.4],[-88.2,74.4],[-89.8,74.5],[-92.4,74.8],[-92.8,75.4],[-92.9,75.9],[-93.9,76.3],[-96.0,76.4],[-97.1,76.8],[-96.7,77.2],[-94.7,77.1]],[[-116.2,77.6],[-116.3,76.9],[-117.1,76.5],[-118.0,76.5],[-119.9,76.1],[-121.5,75.9],[-122.9,76.1],[-122.9,76.1],[-121.2,76.9],[-119.1,77.5],[-117.6,77.5],[-116.2,77.6]],[[107.0,77.0],[127.0,73.6],[160.9,69.4],[179.2,62.3],[160.0,53.2],[155.0,59.1],[138.2,46.3],[128.3,38.6],[125.1,38.8],[120.8,37.9],[118.7,24.5],[108.9,15.3],[99.9,9.2],[100.6,4.8],[95.4,15.7],[88.2,21.7],[77.9,8.3],[67.1,24.7],[48.2,29.5],[51.8,24.0],[59.3,21.4],[52.2,15.6],[42.8,15.3],[36.6,25.8],[34.8,25.0],[43.3,12.0],[50.8,10.3],[38.8,-6.5],[35.2,-19.6],[31.5,-29.3],[18.9,-34.4],[12.8,-19.7],[12.2,-6.3],[7.1,4.5],[-8.0,4.4],[-16.6,12.2],[-16.3,23.0],[-5.9,35.8],[11.1,36.9],[20.1,32.2],[34.3,31.2],[29.7,36.1],[40.9,43.0],[33.9,44.4],[28.8,41.1],[23.4,37.4],[16.9,43.2],[16.2,41.7],[14.7,40.6],[0.1,40.1],[-9.5,38.7],[-4.6,48.7],[8.3,56.8],[16.4,54.5],[28.0,59.5],[17.1,61.3],[10.5,64.5],[33.9,66.8],[45.6,67.6],[68.2,69.1],[74.2,67.3],[84.7,73.8],[107.0,77.0]],[[49.1,41.3],[49.6,40.6],[50.1,40.5],[50.4,40.3],[49.6,40.2],[49.4,39.4],[49.2,39.0],[48.9,38.8],[48.9,38.3],[49.2,37.6],[50.1,37.4],[50.8,36.9],[52.3,36.7],[53.8,37.0],[53.9,37.2],[53.7,37.9],[53.9,39.0],[53.1,39.3],[53.4,40.0],[52.7,40.0],[52.9,40.9],[53.9,40.6],[54.7,41.0],[54.0,41.6],[53.7,42.1],[52.9,41.9],[52.8,41.1],[52.5,41.8],[52.4,42.0],[52.7,42.4],[52.5,42.8],[51.3,43.1],[50.9,44.0],[50.3,44.3],[50.3,44.6],[51.3,44.5],[51.3,45.2],[52.2,45.4],[53.0,45.3],[53.2,46.2],[53.0,46.9],[52.0,46.8],[51.2,47.0],[50.0,46.6],[49.1,46.4],[48.6,45.8],[47.7,45.6],[46.7,44.6],[47.6,43.7],[47.5,43.0],[48.6,41.8],[49.1,41.3],[49.1,41.3]],[[-93.8,77.5],[-94.3,77.5],[-96.2,77.6],[-96.4,77.8],[-94.4,77.8],[-93.7,77.6],[-93.8,77.5]],[[-110.2,77.7],[-112.1,77.4],[-113.5,77.7],[-112.7,78.1],[-111.3,78.2],[-109.9,78.0],[-110.2,77.7]],[[24.7,77.9],[22.5,77.4],[20.7,77.7],[21.4,77.9],[20.8,78.3],[22.9,78.5],[23.3,78.1],[24.7,77.9]],[[-109.7,78.6],[-110.9,78.4],[-112.5,78.4],[-112.5,78.6],[-111.5,78.8],[-111.0,78.8],[-109.7,78.6]],[[-95.8,78.1],[-97.3,77.9],[-98.1,78.1],[-98.6,78.5],[-98.6,78.9],[-97.3,78.8],[-96.8,78.8],[-95.6,78.4],[-95.8,78.1]],[[-100.1,78.3],[-99.7,77.9],[-101.3,78.0],[-102.9,78.3],[-105.2,78.4],[-104.2,78.7],[-105.4,78.9],[-105.5,79.3],[-103.5,79.2],[-100.8,78.8],[-100.1,78.3]],[[105.1,78.3],[99.4,77.9],[101.3,79.2],[102.1,79.3],[102.8,79.3],[105.4,78.7],[105.1,78.3]],[[18.3,79.7],[21.5,79.0],[19.0,78.6],[18.5,77.8],[17.6,77.6],[17.1,76.8],[15.9,76.8],[13.8,77.4],[14.7,77.7],[13.2,78.0],[11.2,78.9],[10.4,79.7],[13.2,80.0],[13.7,79.7],[15.1,79.7],[15.5,80.0],[17.0,80.1],[18.3,79.7]],[[25.4,80.4],[27.4,80.1],[25.9,79.5],[23.0,79.4],[20.1,79.6],[19.9,79.8],[18.5,79.9],[17.4,80.3],[20.5,80.6],[21.9,80.4],[22.9,80.7],[25.4,80.4]],[[51.1,80.5],[49.8,80.4],[48.9,80.3],[48.8,80.2],[47.6,80.0],[46.5,80.2],[47.1,80.6],[44.8,80.6],[46.8,80.8],[48.3,80.8],[48.5,80.5],[49.1,80.8],[50.0,80.9],[51.5,80.7],[51.1,80.5]],[[99.9,78.9],[97.8,78.8],[95.0,79.0],[93.3,79.4],[92.5,80.1],[91.2,80.3],[93.8,81.0],[95.9,81.3],[97.9,80.7],[100.2,79.8],[99.9,78.9]],[[-87.0,79.7],[-85.8,79.3],[-87.2,79.0],[-89.0,78.3],[-90.8,78.2],[-92.9,78.3],[-94.0,78.8],[-93.9,79.1],[-93.1,79.4],[-95.0,79.4],[-96.1,79.7],[-96.7,80.2],[-96.0,80.6],[-95.3,80.9],[-94.3,81.0],[-94.7,81.2],[-92.4,81.3],[-91.1,80.7],[-89.5,80.5],[-87.8,80.3],[-87.0,79.7]],[[-68.5,83.1],[-65.8,83.0],[-63.7,82.9],[-61.9,82.6],[-61.9,82.4],[-64.3,81.9],[-66.8,81.7],[-67.7,81.5],[-65.5,81.5],[-67.8,80.9],[-69.5,80.6],[-71.2,79.8],[-73.2,79.6],[-73.9,79.4],[-76.9,79.3],[-75.5,79.2],[-76.2,79.0],[-75.4,78.5],[-76.3,78.2],[-77.9,77.9],[-78.4,77.5],[-79.8,77.2],[-79.6,77.0],[-77.9,77.0],[-77.9,76.8],[-80.6,76.2],[-83.2,76.5],[-86.1,76.3],[-87.6,76.4],[-89.5,76.5],[-89.6,77.0],[-87.8,77.2],[-88.3,77.9],[-87.7,78.0],[-85.0,77.5],[-86.3,78.2],[-88.0,78.4],[-87.2,78.8],[-85.4,79.0],[-85.1,79.3],[-86.5,79.7],[-86.9,80.3],[-84.2,80.2],[-83.4,80.1],[-81.8,80.5],[-84.1,80.6],[-87.6,80.5],[-89.4,80.9],[-90.2,81.3],[-91.4,81.6],[-91.6,81.9],[-90.1,82.1],[-88.9,82.1],[-87.0,82.3],[-85.5,82.7],[-84.3,82.6],[-83.2,82.3],[-82.4,82.9],[-81.1,83.0],[-79.3,83.1],[-76.2,83.2],[-75.7,83.1],[-72.8,83.2],[-70.7,83.2],[-68.5,83.1],[-68.5,83.1]],[[-27.1,83.5],[-22.7,82.3],[-31.9,82.2],[-27.9,82.1],[-22.9,82.1],[-23.2,81.2],[-15.8,81.9],[-12.2,81.3],[-16.9,80.3],[-17.7,80.1],[-19.7,78.8],[-18.5,77.0],[-21.7,76.6],[-19.6,75.2],[-19.4,74.3],[-20.4,73.8],[-22.2,73.3],[-22.3,72.6],[-24.3,72.6],[-23.4,72.1],[-21.8,70.7],[-24.3,70.9],[-25.2,70.8],[-23.7,70.2],[-25.0,69.3],[-30.7,68.1],[-32.8,67.7],[-36.4,66.0],[-38.4,65.7],[-40.7,64.8],[-41.2,63.5],[-42.4,61.9],[-43.4,60.1],[-46.3,60.9],[-49.2,61.4],[-51.6,63.6],[-52.3,65.2],[-53.3,66.8],[-53.0,68.4],[-51.1,69.1],[-52.0,69.6],[-53.5,69.3],[-54.8,70.3],[-53.4,70.8],[-53.1,71.2],[-55,71.4],[-54.7,72.6],[-56.1,73.6],[-58.6,75.1],[-61.3,76.1],[-66.1,76.1],[-69.7,76.4],[-68.8,77.3],[-71.0,77.6],[-73.2,78.4],[-65.7,79.4],[-68.0,80.1],[-63.7,81.2],[-62.7,81.8],[-57.2,82.2],[-53.0,81.9],[-48.0,82.1],[-44.5,81.7],[-46.8,82.6],[-39.9,83.2],[-35.1,83.6],[-27.1,83.5]]];
+  const coastG=new THREE.Group();
+  COAST.forEach(ring=>{
+    const pts=ring.map(([lo,la])=>llToVec(la,lo,RAD*1.004));
+    const geo=new THREE.BufferGeometry().setFromPoints(pts);
+    const ln=new THREE.LineLoop(geo,new THREE.LineBasicMaterial({color:0x7fb4e8,transparent:true,opacity:0.55}));
+    coastG.add(ln);
+  });
+  world.add(coastG);
+  // subtle land fill dots for stylized texture
+  const dotPos=[];
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+    if(mask[r][c]!=='1')continue;
+    const lat=84-(r/(ROWS-1))*140, lon=-180+(c/(COLS-1))*360;
+    const v=llToVec(lat+(Math.random()-.5)*2, lon+(Math.random()-.5)*2, RAD*1.001);
+    dotPos.push(v.x,v.y,v.z);
+  }
+  const dg=new THREE.BufferGeometry();
+  dg.setAttribute('position',new THREE.Float32BufferAttribute(dotPos,3));
+  const dots=new THREE.Points(dg,new THREE.PointsMaterial({color:0x4a7fb5,size:0.035,sizeAttenuation:true,transparent:true,opacity:0.5}));
+  world.add(dots);
+
+  const stops=[
+    {la:-15,lo:-47},{la:-25,lo:134},{la:-33,lo:-70},{la:4,lo:-74},
+    {la:-33,lo:-70},{la:-34,lo:-64},{la:4,lo:-74},{la:42,lo:12},
+    {la:51,lo:10},{la:52,lo:5}
+  ];
+
+  const markerG=new THREE.Group(); world.add(markerG);
+  stops.forEach((s,i)=>{
+    const v=llToVec(s.la,s.lo,RAD*1.012);
+    const m=new THREE.Mesh(new THREE.SphereGeometry(i===0?0.06:0.042,16,16),
+      new THREE.MeshBasicMaterial({color:i===0?0x5b9bd5:0xc8a45c}));
+    m.position.copy(v); m.visible=false; markerG.add(m);
+  });
+
+  const arcs=[];
+  function makeArc(a,b){
+    const va=llToVec(a.la,a.lo,RAD), vb=llToVec(b.la,b.lo,RAD);
+    const angle=va.angleTo(vb)||0.0001;
+    const pts=[]; const steps=64;
+    for(let i=0;i<=steps;i++){
+      const t=i/steps;
+      const p=new THREE.Vector3().copy(va).multiplyScalar(Math.sin((1-t)*angle))
+        .addScaledVector(vb,Math.sin(t*angle)).multiplyScalar(1/Math.sin(angle));
+      p.multiplyScalar(1+0.17*Math.sin(Math.PI*t));
+      pts.push(p);
+    }
+    const geo=new THREE.BufferGeometry().setFromPoints(pts);
+    const line=new THREE.Line(geo,new THREE.LineBasicMaterial({color:0xe0b34a,transparent:true,opacity:0.95}));
+    return {line,total:steps+1};
+  }
+  for(let i=1;i<stops.length;i++){const a=makeArc(stops[i-1],stops[i]);a.line.geometry.setDrawRange(0,0);world.add(a.line);arcs.push(a);}
+
+  function targetQuatFor(stop){
+    const v=llToVec(stop.la,stop.lo,1).normalize();
+    const q=new THREE.Quaternion().setFromUnitVectors(v,new THREE.Vector3(0,0,1));
+    const tilt=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),-0.12);
+    return tilt.multiply(q);
+  }
+  let targetQuat=targetQuatFor(stops[0]);
+  world.quaternion.copy(targetQuat);
+
+  const legendEls=[...document.querySelectorAll('.jstop')];
+  function litLegend(rev){legendEls.forEach(el=>{const i=parseInt(el.dataset.i);el.classList.toggle('lit',i<=rev-2);});}
+
+  let revealed=1, drawing=-1, drawT=0, lastReveal=0, done=false, idle=0, started=false;
+  markerG.children[0].visible=true;
+  const HOLD=1150;
+
+  function stepFrame(ts){
+    requestAnimationFrame(stepFrame);
+    world.quaternion.slerp(targetQuat,0.05);
+    if(!lastReveal)lastReveal=ts;
+    const arrived=world.quaternion.angleTo(targetQuat)<0.2;
+
+    if(drawing>=0 && drawing<arcs.length){
+      drawT+=0.02; const a=arcs[drawing];
+      const n=Math.min(a.total,Math.floor(drawT*a.total));
+      a.line.geometry.setDrawRange(0,n);
+      if(n>=a.total){ markerG.children[drawing+1].visible=true; drawing=-1; lastReveal=ts; litLegend(revealed); }
+    }
+    if(!done && drawing<0 && revealed<stops.length && ts-lastReveal>HOLD && arrived){
+      drawing=revealed-1; drawT=0; revealed++;
+      if(revealed<=stops.length) targetQuat=targetQuatFor(stops[Math.min(revealed-1,stops.length-1)]);
+    }
+    if(revealed>=stops.length && drawing<0 && !done){done=true;}
+    if(done){ idle+=0.0015; const drift=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),Math.sin(idle)*0.2); targetQuat=targetQuatFor(stops[stops.length-1]).clone().multiply(drift); }
+
+    renderer.render(scene,cam);
+  }
+
+  if(reduce){
+    revealed=stops.length;arcs.forEach(a=>a.line.geometry.setDrawRange(0,a.total));markerG.children.forEach(m=>m.visible=true);
+    world.quaternion.copy(targetQuatFor({la:-10,lo:-30}));litLegend(stops.length);renderer.render(scene,cam);
+  } else {
+    const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&!started){started=true;litLegend(1);requestAnimationFrame(stepFrame);io.disconnect();}}),{threshold:.25});
+    io.observe(host);
+  }
+  addEventListener('resize',size);
+})();
+
+</script>
+</body>
+</html>
