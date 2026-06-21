@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>The guardrail that redrew the architecture — a form-to-GitHub intake case</title>
+
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="A blocked connector, and the stronger system it forced"/>
+<meta property="og:description" content="An automation intake hit a tenant DLP guardrail. Rerouting execution inside the network produced a more reachable, auditable, lower-risk design. Power Automate · UiPath · GitHub API."/>
+<meta property="og:image" content="https://brunoqdf47.github.io/intake-automation/case-intake-cover.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:url" content="https://brunoqdf47.github.io/intake-automation/"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Blocked by policy. Stronger by design — a real automation case"/>
+<meta name="twitter:description" content="A form-to-GitHub intake, re-architected within enterprise guardrails. Power Automate · UiPath · GitHub."/>
+<meta name="twitter:image" content="https://brunoqdf47.github.io/intake-automation/case-intake-cover.png"/>
+<meta name="description" content="Case study: form-to-GitHub intake automation under enterprise DLP governance. Constraint-driven redesign from cloud HTTP to in-network UiPath orchestration."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#09111F;--ink-2:#0E1A2C;--panel:#132236;--panel-2:#1A2C49;
+  --line:#1E3554;--line-soft:rgba(100,150,210,.12);
+  --text:#E6EDF8;--muted:#90A2C0;--faint:#516585;
+  --cyan:#2FD0BF;--cyan-dim:rgba(47,208,191,.10);--cyan-glow:rgba(47,208,191,.20);
+  --amber:#F5A623;--amber-dim:rgba(245,166,35,.12);
+  --display:'Space Grotesk',sans-serif;--body:'IBM Plex Sans',sans-serif;--mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--ink);color:var(--text);font-family:var(--body);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden;width:100%}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+  background-size:54px 54px;mask-image:radial-gradient(ellipse 130% 70% at 50% 0%,#000 15%,transparent 78%);opacity:.4}
+.wrap{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:0 clamp(20px,5vw,28px)}
+h1,h2,h3,h4{font-family:var(--display);font-weight:600;line-height:1.08;letter-spacing:-.02em}
+.mono{font-family:var(--mono);letter-spacing:.04em}
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);display:inline-flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:24px;height:1px;background:var(--cyan)}
+a{color:var(--cyan);text-decoration:none}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:4px}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:40;backdrop-filter:blur(12px);background:rgba(9,17,31,.72);border-bottom:1px solid var(--line-soft)}
+.topbar .row{max-width:1000px;margin:0 auto;padding:13px clamp(20px,5vw,28px);display:flex;justify-content:space-between;align-items:center;gap:14px}
+.topbar .back{font-family:var(--mono);font-size:.7rem;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:7px;letter-spacing:.04em;transition:color .2s}
+.topbar .back:hover{color:var(--cyan)}
+.topbar .tag{font-family:var(--mono);font-size:.62rem;color:var(--faint);letter-spacing:.13em;text-transform:uppercase}
+
+/* HERO */
+.hero{padding:70px 0 56px}
+.hero h1{font-size:clamp(2.1rem,5.5vw,3.6rem);margin:18px 0 18px;font-weight:700}
+.hero h1 .hl{color:var(--cyan)}
+.lede{font-size:clamp(1rem,2vw,1.2rem);color:var(--muted);max-width:62ch}
+.disc{display:inline-flex;align-items:flex-start;gap:8px;font-family:var(--mono);font-size:.68rem;line-height:1.5;color:var(--muted);background:var(--amber-dim);border:1px solid rgba(245,166,35,.25);border-radius:7px;padding:8px 12px;margin-top:26px;max-width:64ch}
+.disc::before{content:"ℹ";color:var(--amber);flex:none}
+.metachips{display:flex;flex-wrap:wrap;gap:7px;margin-top:22px}
+.metachips .chip{font-family:var(--mono);font-size:.68rem;padding:6px 11px;border:1px solid var(--line);border-radius:18px;color:var(--muted)}
+.metachips .chip b{color:var(--cyan);font-weight:500}
+.hero-viz{margin-top:34px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(160deg,var(--panel),var(--ink-2));padding:16px 16px 10px}
+.hero-viz svg{width:100%;height:auto;display:block}
+.viz-labels{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:8px 6px 4px}
+.viz-labels .a{color:var(--amber)}.viz-labels .b{color:var(--cyan)}
+
+/* SECTION */
+section{padding:54px 0;border-top:1px solid var(--line-soft)}
+.stitle{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.stitle .idx{font-family:var(--mono);font-size:.76rem;color:var(--cyan);letter-spacing:.1em}
+h2{font-size:clamp(1.45rem,2.8vw,2rem)}
+.sub{color:var(--muted);max-width:66ch;margin-top:13px;font-size:1.02rem;line-height:1.7}
+.flowlbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);margin:24px 0 9px;display:block}
+.flowlbl.amber{color:var(--amber)}
+
+/* THESIS */
+.thesis{border:1px solid var(--line);border-radius:13px;background:linear-gradient(160deg,var(--panel-2),var(--ink-2));padding:30px 28px;margin-top:18px;position:relative;overflow:hidden}
+.thesis::after{content:"";position:absolute;top:0;right:0;width:140px;height:140px;background:radial-gradient(circle at 70% 30%,var(--cyan-glow),transparent 70%);pointer-events:none}
+.thesis .big{font-family:var(--display);font-weight:600;font-size:clamp(1.25rem,2.6vw,1.7rem);line-height:1.3;letter-spacing:-.01em}
+.thesis .big em{font-style:normal;color:var(--cyan)}
+.thesis p{color:var(--muted);margin-top:14px;font-size:.98rem;max-width:64ch}
+
+/* STAGES */
+.stages{margin-top:26px;display:flex;flex-direction:column;gap:12px}
+.stage{border:1px solid var(--line);border-radius:12px;background:var(--ink-2);overflow:hidden;transition:border-color .3s}
+.stage.open{border-color:var(--cyan)}
+.stage-toggle{width:100%;display:flex;align-items:center;gap:18px;padding:18px 20px;background:none;border:none;color:var(--text);cursor:pointer;text-align:left;font-family:var(--body)}
+.stage-num{font-family:var(--mono);font-size:.72rem;font-weight:500;color:var(--ink);background:var(--cyan);padding:5px 9px;border-radius:6px;flex:none;letter-spacing:.06em}
+.stage.flagstage .stage-num{background:var(--amber)}
+.stage-main{flex:1;min-width:0}
+.stage-name{font-family:var(--display);font-weight:600;font-size:1.08rem;letter-spacing:-.01em}
+.stage-summary{color:var(--muted);font-size:.88rem;margin-top:3px}
+.stage-chev{flex:none;color:var(--faint);font-family:var(--mono);transition:transform .35s ease,color .3s;font-size:1.1rem}
+.stage.open .stage-chev{transform:rotate(45deg);color:var(--cyan)}
+.stage-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.4,0,.2,1)}
+.stage.open .stage-panel{grid-template-rows:1fr}
+.stage-panel-inner{overflow:hidden}
+.stage-body{padding:4px 20px 22px;border-top:1px solid var(--line-soft)}
+.stage-body .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);margin:16px 0 9px;display:block}
+.plist{list-style:none;display:flex;flex-direction:column;gap:7px}
+.plist li{font-size:.93rem;color:var(--muted);display:flex;gap:10px;line-height:1.5}
+.plist li::before{content:"→";color:var(--cyan);font-family:var(--mono);flex:none;font-size:.85rem;margin-top:2px}
+.plist li.no::before{content:"✕";color:var(--amber)}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+.chip{font-family:var(--mono);font-size:.68rem;padding:6px 11px;border:1px solid var(--line);border-radius:18px;color:var(--muted)}
+.chip b{color:var(--cyan);font-weight:500}
+.chip.no{border-color:rgba(245,166,35,.4);color:var(--amber)}
+.edge{margin-top:16px;border-left:2px solid var(--amber);background:var(--amber-dim);border-radius:0 8px 8px 0;padding:11px 14px;font-size:.88rem;color:var(--text);line-height:1.55}
+.edge b{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:4px}
+.edge.cyan{border-left-color:var(--cyan);background:var(--cyan-dim)}
+.edge.cyan b{color:var(--cyan)}
+
+/* mini flow */
+.mini-flow{display:flex;flex-wrap:wrap;gap:0;margin-top:6px;max-width:100%}
+.mini-step{flex:1 1 78px;min-width:70px;border:1px solid var(--line);border-radius:7px;padding:9px 8px;background:var(--ink);text-align:center;margin-right:16px;margin-bottom:10px;position:relative}
+.mini-step:last-child{margin-right:0}
+.mini-step::after{content:"→";position:absolute;right:-13px;top:50%;transform:translateY(-50%);color:var(--faint);font-family:var(--mono);font-size:.8rem}
+.mini-step:last-child::after{content:""}
+.mini-step .mn{font-family:var(--mono);font-size:.54rem;color:var(--faint);display:block}
+.mini-step .mt{font-family:var(--display);font-size:.78rem;font-weight:500;margin-top:3px}
+.mini-step.flag{border-color:var(--amber);background:var(--amber-dim)}
+.mini-step.go{border-color:var(--cyan);background:var(--cyan-dim)}
+
+/* MATRIX */
+.matrix{width:100%;border-collapse:separate;border-spacing:0;margin-top:6px;border:1px solid var(--line);border-radius:11px;overflow:hidden;font-size:.84rem;background:var(--ink)}
+.matrix th,.matrix td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+.matrix thead th{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);background:var(--ink-2);font-weight:500}
+.matrix tbody tr:last-child td{border-bottom:none}
+.matrix .opt{font-family:var(--display);font-weight:600;color:var(--text);font-size:.9rem}
+.matrix .opt small{display:block;font-family:var(--mono);font-weight:400;font-size:.62rem;color:var(--faint);margin-top:2px}
+.matrix tr.win{background:var(--cyan-dim)}
+.matrix tr.win .opt{color:var(--cyan)}
+.vd{font-family:var(--mono);font-size:.66rem;font-weight:500;white-space:nowrap}
+.vd.y{color:var(--cyan)} .vd.n{color:var(--amber)} .vd.m{color:var(--muted)}
+@media(max-width:640px){.matrix{display:block;overflow-x:auto;white-space:nowrap}}
+
+/* BRIDGE / CARDS */
+.bridge-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}
+@media(max-width:760px){.bridge-grid{grid-template-columns:1fr}}
+.bcard{border:1px solid var(--line);border-radius:12px;background:var(--ink-2);padding:22px 22px}
+.bcard .bk{font-family:var(--mono);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin-bottom:10px;display:block}
+.bcard h3{font-size:1.05rem;margin-bottom:10px}
+.bcard p{color:var(--muted);font-size:.92rem;line-height:1.6}
+.bcard .plist{margin-top:2px}
+.bcard .plist li{font-size:.88rem}
+
+/* DEMO */
+.demo{display:grid;grid-template-columns:1fr 1.1fr;gap:18px;margin-top:24px;align-items:start}
+@media(max-width:760px){.demo{grid-template-columns:1fr}}
+.dform{border:1px solid var(--line);border-radius:12px;background:var(--ink-2);padding:22px}
+.dform label{display:block;font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:15px 0 7px}
+.dform label:first-of-type{margin-top:0}
+.dform input,.dform select{width:100%;font-family:var(--body);font-size:.9rem;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--ink);color:var(--text)}
+.dform input:focus,.dform select:focus{outline:none;border-color:var(--cyan)}
+.genbtn{margin-top:18px;width:100%;font-family:var(--display);font-weight:600;font-size:.95rem;border:none;background:var(--cyan);color:var(--ink);padding:12px;border-radius:9px;cursor:pointer;transition:box-shadow .2s}
+.genbtn:hover{box-shadow:0 0 0 3px var(--cyan-glow)}
+.issue{border:1px solid var(--line);border-radius:12px;background:var(--ink-2);overflow:hidden}
+.issue .ih{padding:16px 18px;border-bottom:1px solid var(--line-soft);background:linear-gradient(160deg,var(--panel),var(--ink-2))}
+.istate{display:inline-flex;align-items:center;gap:6px;background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(47,208,191,.3);font-family:var(--mono);font-size:.62rem;font-weight:500;padding:4px 10px;border-radius:20px}
+.issue h3{font-size:1rem;margin-top:12px;font-weight:600}
+.imeta{font-family:var(--mono);font-size:.62rem;color:var(--faint);margin-top:7px;letter-spacing:.02em}
+.ibody{padding:14px 18px}
+.ibody dt{font-family:var(--mono);font-size:.58rem;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin-top:11px}
+.ibody dt:first-child{margin-top:0}
+.ibody dd{margin:3px 0 0;color:var(--text);font-size:.9rem}
+.ilabels{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 16px}
+.ilbl{font-family:var(--mono);font-size:.62rem;padding:3px 9px;border-radius:20px;border:1px solid}
+.ilbl.intake{color:var(--cyan);border-color:rgba(47,208,191,.4);background:var(--cyan-dim)}
+.ilbl.prio{color:var(--amber);border-color:rgba(245,166,35,.4);background:var(--amber-dim)}
+.ilbl.area{color:var(--muted);border-color:var(--line);background:var(--ink)}
+
+/* PIPELINE RUN */
+.run{border:1px solid var(--line);border-radius:12px;background:var(--ink-2);padding:20px 20px}
+.pipe{list-style:none;display:flex;flex-direction:column}
+.pstep{position:relative;display:grid;grid-template-columns:30px 1fr;gap:14px;padding-bottom:20px}
+.pstep:last-child{padding-bottom:0}
+.pstep::before{content:"";position:absolute;left:14px;top:22px;bottom:-2px;width:2px;background:var(--line);transition:background .3s}
+.pstep:last-child::before{display:none}
+.pstep.done::before{background:var(--cyan)}
+.dot{width:16px;height:16px;margin:2px auto 0;border-radius:50%;border:2px solid var(--faint);background:var(--ink);position:relative;z-index:1;transition:border-color .3s,background .3s}
+.pstep.active .dot{border-color:var(--cyan);animation:ppulse 1.2s ease-out infinite}
+.pstep.done .dot{border-color:var(--cyan);background:var(--cyan)}
+.pstep.done .dot::after{content:"";position:absolute;left:3.5px;top:.5px;width:5px;height:9px;border:solid var(--ink);border-width:0 2px 2px 0;transform:rotate(45deg)}
+@keyframes ppulse{0%{box-shadow:0 0 0 0 var(--cyan-glow)}70%{box-shadow:0 0 0 7px rgba(47,208,191,0)}100%{box-shadow:0 0 0 0 rgba(47,208,191,0)}}
+.pc{min-width:0}
+.ptitle{display:block;font-family:var(--display);font-weight:600;font-size:.98rem;color:var(--muted);transition:color .3s;line-height:1.2}
+.pstep.active .ptitle,.pstep.done .ptitle{color:var(--text)}
+.pstatus{display:block;font-family:var(--mono);font-size:.62rem;color:var(--faint);margin-top:3px;letter-spacing:.02em;transition:color .3s;min-height:.9em}
+.pstep.active .pstatus{color:var(--cyan)}
+.jsonbox{font-family:var(--mono);font-size:.64rem;line-height:1.5;background:var(--ink);border:1px solid var(--line);border-radius:8px;padding:0 13px;color:#AEBED6;margin-top:0;overflow:auto;max-height:0;opacity:0;transition:max-height .45s ease,opacity .3s ease,padding .3s ease,margin .3s ease;white-space:pre}
+.jsonbox.show{max-height:220px;opacity:1;padding:11px 13px;margin-top:10px}
+.pstep .issue{margin-top:12px}
+.genbtn:disabled{opacity:.55;cursor:default;box-shadow:none}
+.runhint{font-family:var(--mono);font-size:.62rem;color:var(--faint);margin-top:14px}
+
+/* OUTCOME + CLOSE */
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;margin-bottom:24px}
+.tool{font-family:var(--mono);font-size:.72rem;padding:7px 13px;border:1px solid var(--line);border-radius:20px;color:var(--muted);background:var(--ink-2)}
+.tool b{color:var(--cyan);font-weight:500}
+.close-box{border:1px solid var(--line);border-radius:14px;background:linear-gradient(160deg,var(--panel-2),var(--ink-2));padding:38px 32px;margin-top:8px;position:relative;overflow:hidden}
+.close-box::after{content:"";position:absolute;bottom:-40px;left:-20px;width:200px;height:200px;background:radial-gradient(circle,var(--cyan-glow),transparent 70%);pointer-events:none}
+.close-box .statement{font-family:var(--display);font-weight:500;font-size:clamp(1.15rem,2.4vw,1.5rem);line-height:1.4;letter-spacing:-.01em;max-width:62ch}
+.close-box .statement em{font-style:normal;color:var(--cyan)}
+.close-box p{color:var(--muted);max-width:62ch;margin-top:16px;font-size:.98rem}
+
+.backwrap{padding:30px 0 0;text-align:center}
+.backbtn{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--text);border:1px solid var(--line);background:var(--ink-2);padding:11px 20px;border-radius:24px;transition:border-color .2s,color .2s}
+.backbtn:hover{border-color:var(--cyan);color:var(--cyan)}
+
+footer{padding:30px 0 56px;color:var(--faint);font-family:var(--mono);font-size:.68rem;text-align:center;border-top:1px solid var(--line-soft);line-height:1.7;margin-top:40px}
+
+/* reveal */
+.rev{opacity:0;transform:translateY(14px);transition:opacity .65s ease,transform .65s ease}
+.rev.in{opacity:1;transform:none}
+
+/* hero viz */
+.nlabel{font-family:var(--mono);font-size:12px;fill:var(--text)}
+.nsub{font-family:var(--mono);font-size:9.5px;fill:var(--faint)}
+.nbox{fill:var(--ink);stroke:var(--line);stroke-width:1.4}
+.nbox.go{stroke:var(--cyan)} .nbox.stop{stroke:var(--amber)}
+.nbox.ghost{opacity:.4}
+.flw{fill:none;stroke-width:2.2;stroke-linecap:round}
+.flw.go{stroke:var(--cyan)} .flw.stop{stroke:var(--amber)}
+.zone{fill:rgba(47,208,191,.04);stroke:var(--cyan);stroke-width:1.2;stroke-dasharray:4 5}
+.zlab{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;fill:var(--cyan)}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}}
+@keyframes march{to{stroke-dashoffset:-44}}
+#hv .en{animation:fadein .6s ease backwards}
+#hv .d1{animation-delay:.1s}#hv .d2{animation-delay:.45s}#hv .d3{animation-delay:.8s}#hv .d4{animation-delay:1.15s}#hv .d5{animation-delay:1.5s}
+#hv .march{stroke-dasharray:6 8;animation:march 1.7s linear infinite}
+
+@media(prefers-reduced-motion:reduce){
+  .rev{opacity:1;transform:none;transition:none}
+  *{animation:none!important}
+  .stage-panel{transition:none}
+  #hv .en{opacity:1!important;transform:none!important}
+}
+@media(max-width:760px){.stitle{flex-direction:column;gap:6px}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="row">
+    <a class="back" href="https://brunoqdf47.github.io/">← Bruno Queiroz — Business Transformation</a>
+    <span class="tag">Case · Intake automation under governance</span>
+  </div>
+</div>
+
+<header class="hero wrap">
+  <span class="eyebrow">Case study · enterprise integration</span>
+  <h1>A blocked connector, and the <span class="hl">stronger system</span> it forced.</h1>
+  <p class="lede">An internal team needed automated intake — a form submission becoming a tracked work item on a GitHub board. The fast low-code path hit a corporate security guardrail. Rerouting the work to where it belonged — inside the network, under orchestration — didn't just unblock it. It produced a more reachable, auditable, and lower-risk design.</p>
+
+  <div class="metachips">
+    <span class="chip">Role · <b>AI &amp; Automation Specialist</b></span>
+    <span class="chip">Stack · <b>Power Automate · UiPath · GitHub API</b></span>
+    <span class="chip">Constraint · <b>Tenant DLP governance</b></span>
+  </div>
+
+  <div class="disc">A real situation, anonymised — internal names, hostnames and credentials are generalised. Sample submissions and figures are illustrative, representative of the actual implementation.</div>
+
+  <div class="hero-viz">
+    <svg id="hv" viewBox="0 0 900 270" role="img" aria-label="Schematic: a cloud HTTP call aimed at the internal GitHub server is stopped at the corporate DLP boundary; execution reroutes through email into an in-network UiPath robot and queue, reaching the same GitHub server.">
+      <!-- cloud lane -->
+      <rect class="nbox en d1" x="20" y="28" width="126" height="46" rx="10"/>
+      <text class="nlabel en d1" x="36" y="50">Forms</text><text class="nsub en d1" x="36" y="65">submission</text>
+      <path class="flw go en d2" d="M146 51 H176"/>
+      <rect class="nbox en d2" x="176" y="28" width="150" height="46" rx="10"/>
+      <text class="nlabel en d2" x="192" y="50">Power Automate</text><text class="nsub en d2" x="192" y="65">cloud orchestrator</text>
+      <path class="flw stop en d3" d="M326 51 H360"/>
+      <rect class="nbox stop en d3" x="360" y="28" width="108" height="46" rx="10"/>
+      <text class="nlabel en d3" x="376" y="50" fill="var(--amber)">HTTP</text><text class="nsub en d3" x="376" y="65">generic outbound</text>
+      <!-- blocked crossing toward GitHub -->
+      <path class="flw stop march en d3" d="M468 51 H548"/>
+      <text class="nsub en d4" x="500" y="42" fill="var(--amber)">→ GitHub</text>
+
+      <!-- DLP boundary wall -->
+      <rect class="en d3" x="556" y="20" width="10" height="170" rx="2" fill="var(--amber-dim)" stroke="var(--amber)" stroke-width="1.4"/>
+      <text class="zlab en d3" x="561" y="206" fill="var(--amber)" text-anchor="middle">DLP boundary</text>
+      <g class="en d4">
+        <circle cx="561" cy="51" r="12" fill="var(--amber)"/>
+        <path d="M555 45 L567 57 M567 45 L555 57" stroke="var(--ink)" stroke-width="2.1" stroke-linecap="round"/>
+      </g>
+      <!-- faded blocked continuation to GitHub -->
+      <path class="flw stop en d4" style="opacity:.3" stroke-dasharray="3 5" d="M574 60 Q620 110 678 150"/>
+
+      <!-- handoff: PA -> email (down) -->
+      <path class="flw go en d3" d="M251 74 V138"/>
+      <rect class="nbox en d3" x="176" y="138" width="150" height="46" rx="10"/>
+      <text class="nlabel en d3" x="192" y="160">Email + JSON</text><text class="nsub en d3" x="192" y="175">Outlook connector ✓</text>
+
+      <!-- network zone -->
+      <rect class="zone en d3" x="346" y="124" width="510" height="120" rx="12"/>
+      <text class="zlab en d3" x="362" y="144">CORPORATE NETWORK · ON-PREM</text>
+
+      <path class="flw go march en d4" d="M326 161 H372"/>
+      <rect class="nbox go en d4" x="372" y="150" width="138" height="46" rx="10"/>
+      <text class="nlabel en d4" x="388" y="172">UiPath Robot</text><text class="nsub en d4" x="388" y="187">reads mailbox</text>
+      <path class="flw go march en d4" d="M510 173 H536"/>
+      <rect class="nbox go en d4" x="536" y="150" width="96" height="46" rx="10"/>
+      <text class="nlabel en d4" x="552" y="172">Queue</text><text class="nsub en d4" x="552" y="187">retry · audit</text>
+      <path class="flw go march en d5" d="M632 173 H668"/>
+      <rect class="nbox go en d5" x="668" y="150" width="160" height="46" rx="10"/>
+      <text class="nlabel en d5" x="684" y="172">GitHub</text><text class="nsub en d5" x="684" y="187">internal · self-hosted</text>
+      <g class="en d5">
+        <circle cx="812" cy="140" r="11" fill="var(--cyan)"/>
+        <path d="M806 140 l4 4 l8 -10" stroke="var(--ink)" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </svg>
+    <div class="viz-labels"><span class="a">Cloud path → GitHub · blocked at DLP</span><span class="b">Rerouted in-network · reaches the same GitHub</span></div>
+  </div>
+</header>
+
+<main>
+
+<!-- 01 SITUATION -->
+<section class="wrap rev">
+  <div class="stitle"><span class="idx">01</span><h2>The situation</h2></div>
+  <p class="sub">An internal team was receiving automation requests from across the business — by email and chat, with no consistent triage or audit trail. The goal: a single front door that turns each submission into a tracked, labelled work item on a GitHub board, so every request enters the same queue with the same status from the first second.</p>
+  <div class="bridge-grid">
+    <div class="bcard">
+      <span class="bk">Input</span>
+      <h3>A structured request form</h3>
+      <p>One intake form — requester, business area, process, pain, expected value, priority — so every idea arrives in the same shape.</p>
+    </div>
+    <div class="bcard">
+      <span class="bk">Output</span>
+      <h3>A GitHub Issue on the board</h3>
+      <p>A work item with a meaningful title, the request details in the body, and a <span class="mono">status:intake</span> label that drops it into the triage column automatically.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 02 THE TURN -->
+<section class="wrap rev">
+  <div class="stitle"><span class="idx">02</span><h2>The turn</h2></div>
+  <div class="thesis">
+    <div class="big">The first design wasn't the mistake. <em>Testing the fast path is how you find the real boundary — fast.</em></div>
+    <p>The judgment isn't in avoiding the constraint; it's in what you do when you hit it. Here the tenant's security policy redrew the architecture — and the redesign was the stronger system, because it was forced toward the place the work was already allowed to run. What follows is the decision as it actually unfolded, not a tidied-up version.</p>
+  </div>
+</section>
+
+<!-- 03 HOW IT UNFOLDED -->
+<section class="wrap rev">
+  <div class="stitle"><span class="idx">03</span><h2>How it unfolded</h2></div>
+  <p class="sub">Four moves — from the efficient hypothesis, through the guardrail, to the design that shipped. Tap any to expand.</p>
+
+  <div class="stages">
+
+    <div class="stage open">
+      <button class="stage-toggle" aria-expanded="true">
+        <span class="stage-num mono">01</span>
+        <span class="stage-main">
+          <span class="stage-name">The efficient hypothesis</span>
+          <span class="stage-summary">Fully low-code: let Power Automate call the GitHub API directly.</span>
+        </span>
+        <span class="stage-chev mono">+</span>
+      </button>
+      <div class="stage-panel"><div class="stage-panel-inner"><div class="stage-body">
+        <span class="lbl">What I did</span>
+        <ul class="plist">
+          <li>Built the shortest credible path — Forms trigger, get response details, compose the payload, POST it to the GitHub API.</li>
+          <li>Minimal moving parts, no extra tooling, shippable in an afternoon. The textbook first move.</li>
+          <li>Stood it up and tested it as a working hypothesis, not as the final answer.</li>
+        </ul>
+        <span class="lbl">The flow</span>
+        <div class="mini-flow">
+          <div class="mini-step"><span class="mn">IN</span><span class="mt">Forms trigger</span></div>
+          <div class="mini-step"><span class="mn">·</span><span class="mt">Get details</span></div>
+          <div class="mini-step"><span class="mn">·</span><span class="mt">Compose</span></div>
+          <div class="mini-step flag"><span class="mn">OUT</span><span class="mt">HTTP · POST</span></div>
+        </div>
+        <div class="edge cyan"><b>Why start here</b>Testing the fast path is the cheapest way to find the real boundary. It surfaced the constraint in one save — faster than designing around a wall before confirming the wall exists.</div>
+      </div></div></div>
+    </div>
+
+    <div class="stage flagstage">
+      <button class="stage-toggle" aria-expanded="false">
+        <span class="stage-num mono">02</span>
+        <span class="stage-main">
+          <span class="stage-name">The guardrail</span>
+          <span class="stage-summary">Tenant DLP blocks the HTTP connector — the path to GitHub closes.</span>
+        </span>
+        <span class="stage-chev mono">+</span>
+      </button>
+      <div class="stage-panel"><div class="stage-panel-inner"><div class="stage-body">
+        <span class="lbl">What happened</span>
+        <ul class="plist">
+          <li class="no">On save, the Data Loss Prevention policy classified the generic HTTP connector as blocked and suspended the flow — so the call never reached GitHub.</li>
+          <li>A connector that can post data to any endpoint is restricted by default in most enterprise tenants. This is governance working as designed, not a bug.</li>
+          <li>Respecting the boundary, rather than quietly working around it, was the only acceptable starting point.</li>
+        </ul>
+        <span class="lbl">Where it stopped</span>
+        <div class="mini-flow">
+          <div class="mini-step"><span class="mn">·</span><span class="mt">Power Automate</span></div>
+          <div class="mini-step"><span class="mn">·</span><span class="mt">HTTP call</span></div>
+          <div class="mini-step flag"><span class="mn">DLP</span><span class="mt">Blocked at boundary</span></div>
+          <div class="mini-step"><span class="mn">✕</span><span class="mt">GitHub · unreached</span></div>
+        </div>
+        <div class="edge"><b>The blocker, in plain terms</b>Admin data policy restricts use of these APIs: HTTP. The generic outbound connector sits in the blocked group and can't coexist with business connectors in the same flow — so the GitHub call it was carrying could never leave.</div>
+      </div></div></div>
+    </div>
+
+    <div class="stage">
+      <button class="stage-toggle" aria-expanded="false">
+        <span class="stage-num mono">03</span>
+        <span class="stage-main">
+          <span class="stage-name">Options, evaluated against the real constraint</span>
+          <span class="stage-summary">Three viable paths, scored on what actually mattered.</span>
+        </span>
+        <span class="stage-chev mono">+</span>
+      </button>
+      <div class="stage-panel"><div class="stage-panel-inner"><div class="stage-body">
+        <span class="lbl">Decision record</span>
+        <table class="matrix">
+          <thead><tr><th>Option</th><th>New security ask</th><th>Reaches internal GitHub</th><th>Auditable</th><th>Verdict</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="opt">Scoped custom connector<small>locked to the GitHub host</small></td>
+              <td>Yes — admin must allow</td>
+              <td><span class="vd n">No · cloud-originated</span></td>
+              <td><span class="vd m">Partial</span></td>
+              <td><span class="vd n">Rejected</span></td>
+            </tr>
+            <tr>
+              <td class="opt">DLP exception for HTTP<small>broad outbound risk</small></td>
+              <td>Yes — high-friction</td>
+              <td><span class="vd n">No · cloud-originated</span></td>
+              <td><span class="vd m">Partial</span></td>
+              <td><span class="vd n">Rejected</span></td>
+            </tr>
+            <tr class="win">
+              <td class="opt">In-network execution<small>UiPath robot makes the call</small></td>
+              <td><span class="vd y">None · sanctioned tools</span></td>
+              <td><span class="vd y">Yes · runs on-prem</span></td>
+              <td><span class="vd y">Yes · queue history</span></td>
+              <td><span class="vd y">Selected</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="edge cyan"><b>The deciding insight</b>Every cloud option failed on two axes at once: each needed a fresh security approval, and none could reach a self-hosted GitHub server behind the firewall. The internal host was never reachable from any cloud connector — so the constraint was never only DLP. Moving execution inside the network resolved both with one decision, and asked security for nothing it hadn't already approved.</div>
+      </div></div></div>
+    </div>
+
+    <div class="stage">
+      <button class="stage-toggle" aria-expanded="false">
+        <span class="stage-num mono">04</span>
+        <span class="stage-main">
+          <span class="stage-name">In-network execution — the design that shipped</span>
+          <span class="stage-summary">Power Automate signals; a UiPath robot inside the network creates the Issue.</span>
+        </span>
+        <span class="stage-chev mono">+</span>
+      </button>
+      <div class="stage-panel"><div class="stage-panel-inner"><div class="stage-body">
+        <span class="lbl">The shape</span>
+        <ul class="plist">
+          <li>Power Automate keeps doing only what it's allowed to — watch the form and send an email, both business-group connectors that DLP permits.</li>
+          <li>That email is the signal. A UiPath robot, running inside the network, picks it up and creates the GitHub Issue from there — reachable because the call now originates on-prem.</li>
+        </ul>
+        <span class="lbl">The pipeline</span>
+        <div class="mini-flow">
+          <div class="mini-step"><span class="mn">IN</span><span class="mt">Forms</span></div>
+          <div class="mini-step"><span class="mn">·</span><span class="mt">Power Automate</span></div>
+          <div class="mini-step"><span class="mn">SIGNAL</span><span class="mt">Email + JSON</span></div>
+          <div class="mini-step go"><span class="mn">BOT</span><span class="mt">UiPath + Queue</span></div>
+          <div class="mini-step go"><span class="mn">OUT</span><span class="mt">GitHub Issue</span></div>
+        </div>
+        <div class="edge cyan"><b>The detail that matters</b>How that robot is built — payload format, process shape, idempotency, secrets — is what separates a durable pipeline from a fragile script. That's the next section.</div>
+      </div></div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 04 INSIDE THE BUILD -->
+<section class="wrap rev">
+  <div class="stitle"><span class="idx">04</span><h2>Inside the build</h2></div>
+  <p class="sub">Two pipelines, split at the network boundary — and the engineering decisions that keep the on-prem side from degrading into a brittle script.</p>
+
+  <span class="flowlbl">Power Automate · cloud · allowed connectors only</span>
+  <div class="mini-flow">
+    <div class="mini-step"><span class="mn">TRIGGER</span><span class="mt">New response</span></div>
+    <div class="mini-step"><span class="mn">·</span><span class="mt">Get details</span></div>
+    <div class="mini-step"><span class="mn">·</span><span class="mt">Compose JSON</span></div>
+    <div class="mini-step"><span class="mn">SEND</span><span class="mt">Email + payload</span></div>
+  </div>
+
+  <span class="flowlbl">UiPath · on-prem · Dispatcher + Performer</span>
+  <div class="mini-flow">
+    <div class="mini-step go"><span class="mn">DISPATCH</span><span class="mt">Read mailbox</span></div>
+    <div class="mini-step go"><span class="mn">·</span><span class="mt">Enqueue item</span></div>
+    <div class="mini-step go"><span class="mn">PERFORM</span><span class="mt">Build &amp; POST</span></div>
+    <div class="mini-step go"><span class="mn">·</span><span class="mt">Move to processed</span></div>
+  </div>
+
+  <div class="bridge-grid" style="margin-top:30px">
+    <div class="bcard">
+      <span class="bk">Email payload</span>
+      <h3>JSON, not free text</h3>
+      <ul class="plist">
+        <li class="no">A nicely formatted email body forces the robot to scrape with regex — it breaks on the first layout change.</li>
+        <li>Power Automate emits the same GitHub JSON in the body (or a <span class="mono">.json</span> attachment); UiPath just deserializes. Format-proof.</li>
+      </ul>
+    </div>
+    <div class="bcard">
+      <span class="bk">Process shape</span>
+      <h3>A queue, not a monolith</h3>
+      <ul class="plist">
+        <li class="no">One process that reads mail and posts in a single shot loses retry and visibility, and vanishes without a trace when it fails.</li>
+        <li>Dispatcher enqueues; Performer consumes and POSTs — automatic retry, an exception lane, and a full run history for audit.</li>
+      </ul>
+    </div>
+    <div class="bcard">
+      <span class="bk">Idempotency</span>
+      <h3>No duplicate Issues</h3>
+      <ul class="plist">
+        <li class="no">A restart or a duplicated poll re-reads the same email and opens a second Issue — quietly polluting the repo.</li>
+        <li>Handled mail is moved to a processed folder, or deduplicated on the Forms response ID. Reprocessing becomes a no-op.</li>
+      </ul>
+    </div>
+    <div class="bcard">
+      <span class="bk">Secrets</span>
+      <h3>Token in the vault</h3>
+      <ul class="plist">
+        <li class="no">A PAT hardcoded in the workflow leaks into source and can't be rotated cleanly.</li>
+        <li>It lives as an Orchestrator Credential asset, fetched at runtime — auditable, and rotatable without touching the build.</li>
+      </ul>
+    </div>
+    <div class="bcard" style="grid-column:1/-1">
+      <span class="bk">Trigger &amp; runtime — the feasibility gate</span>
+      <h3>Event vs poll, and the capacity that decides it</h3>
+      <ul class="plist">
+        <li>Trigger: an Integration Service email trigger if the estate has it; otherwise a scheduled dispatcher polling the mailbox. Latency of a few minutes is irrelevant for intake.</li>
+        <li class="no">The real gate is unattended robot capacity. Without an available unattended runtime, none of this runs — so it's the first thing to confirm, before any of the above.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 05 WHY STRONGER -->
+<section class="wrap rev">
+  <div class="stitle"><span class="idx">05</span><h2>Why the constraint made it stronger</h2></div>
+  <p class="sub">These gains aren't a lucky side effect of the workaround. Each follows directly from moving execution into the network and putting it under orchestration — they are the design, not an accident of it.</p>
+  <div class="bridge-grid">
+    <div class="bcard"><span class="bk">01 · Reachability</span><h3>Solved, not just unblocked</h3><p>The internal GitHub server was never reachable from the cloud. An on-prem robot talks to it natively — closing a second problem the first design would have hit even with DLP open.</p></div>
+    <div class="bcard"><span class="bk">02 · Audit</span><h3>Governance-grade trail</h3><p>A queue gives automatic retry, an exception lane, and full run history. A fire-and-forget HTTP call leaves nothing behind when it fails. For an internal intake process, that trail is a requirement.</p></div>
+    <div class="bcard"><span class="bk">03 · Security</span><h3>Zero new footprint</h3><p>The whole pipeline runs on tools already approved for the tenant. No connector exception, no firewall change, no ticket to security — which is also why it shipped instead of waiting on a review board.</p></div>
+    <div class="bcard"><span class="bk">04 · Cost</span><h3>No new spend</h3><p>It reuses the existing UiPath estate rather than adding external SaaS or premium licensing. The constraint pushed the solution toward infrastructure the company already pays for.</p></div>
+  </div>
+</section>
+
+<!-- 06 DEMO -->
+<section class="wrap rev">
+  <div class="stitle"><span class="idx">06</span><h2>See it run</h2></div>
+  <p class="sub">Submit an intake and watch it travel the pipeline — Power Automate composes the payload, emails it to the robot, UiPath posts it to GitHub — ending in the Issue that lands on the board.</p>
+  <div class="demo">
+    <div class="dform">
+      <label for="f-req">Requester</label>
+      <input id="f-req" type="text" value="A. Müller"/>
+      <label for="f-area">Business area</label>
+      <select id="f-area"><option selected>Operations</option><option>Finance</option><option>HR</option><option>Procurement</option></select>
+      <label for="f-proc">Process to automate</label>
+      <input id="f-proc" type="text" value="Weekly report consolidation"/>
+      <label for="f-prio">Priority</label>
+      <select id="f-prio"><option>Low</option><option selected>High</option><option>Critical</option></select>
+      <button class="genbtn" id="runbtn">Submit intake</button>
+      <p class="runhint">Nothing leaves your browser — this is a simulation of the real pipeline.</p>
+    </div>
+    <div class="run" id="run">
+      <ol class="pipe" id="pipe">
+        <li class="pstep" id="s-pa"><span class="dot"></span>
+          <div class="pc"><span class="ptitle">Power Automate</span><span class="pstatus">waiting</span></div></li>
+        <li class="pstep" id="s-email"><span class="dot"></span>
+          <div class="pc"><span class="ptitle">Email + JSON payload</span><span class="pstatus">waiting</span>
+            <pre class="jsonbox" id="jsonbox"></pre></div></li>
+        <li class="pstep" id="s-uipath"><span class="dot"></span>
+          <div class="pc"><span class="ptitle">UiPath robot · Orchestrator queue</span><span class="pstatus">waiting</span></div></li>
+        <li class="pstep" id="s-github"><span class="dot"></span>
+          <div class="pc"><span class="ptitle">GitHub API</span><span class="pstatus">waiting</span></div></li>
+        <li class="pstep" id="s-issue"><span class="dot"></span>
+          <div class="pc"><span class="ptitle">Issue on the board</span><span class="pstatus">waiting</span>
+            <div class="issue" id="issueCard" hidden></div></div></li>
+      </ol>
+    </div>
+  </div>
+  <p style="font-family:var(--mono);font-size:.62rem;color:var(--faint);margin-top:12px">Illustrative data — not a real submission.</p>
+</section>
+
+<!-- 07 PRINCIPLE -->
+<section class="wrap rev">
+  <div class="stitle"><span class="idx">07</span><h2>The principle underneath</h2></div>
+  <div class="tools">
+    <span class="tool"><b>0</b> new security exceptions</span>
+    <span class="tool"><b>100%</b> sanctioned tooling</span>
+    <span class="tool"><b>Full</b> audit trail · queue history</span>
+    <span class="tool"><b>1</b> front door for every request</span>
+  </div>
+  <div class="close-box">
+    <p class="statement">Reading an organisation's constraints early — and designing inside its sanctioned tooling — is <em>cheaper and more durable</em> than seeking exceptions to it. The fast first design isn't waste; it's how you find the real boundary quickly. The work is in what happens next.</p>
+    <p>The boundary didn't compromise the system — it pushed it toward a better shape: reachable, auditable, low-risk, and built from tools the company already runs. That's the difference between a workaround and a design.</p>
+  </div>
+  <div class="backwrap">
+    <a class="backbtn" href="https://brunoqdf47.github.io/">← Back to portfolio · Bruno Queiroz</a>
+  </div>
+</section>
+
+</main>
+
+<footer class="wrap">
+  Bruno Queiroz · Business Transformation · case study · identifiers anonymised · figures illustrative and representative
+</footer>
+
+<script>
+/* ACCORDION */
+document.querySelectorAll('.stage-toggle').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var stage=btn.closest('.stage');
+    var open=stage.classList.contains('open');
+    stage.classList.toggle('open');
+    btn.setAttribute('aria-expanded',String(!open));
+  });
+});
+
+/* REVEAL */
+(function(){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
+  document.querySelectorAll('.rev').forEach(function(el){io.observe(el);});
+})();
+
+/* PIPELINE SIMULATION */
+(function(){
+  function $(id){return document.getElementById(id);}
+  function esc(s){return String(s).replace(/[&<>]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;'})[c];});}
+  function slug(s){return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');}
+  var ids=['s-pa','s-email','s-uipath','s-github','s-issue'];
+  var els=ids.map($);
+  var reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var running=false, n=246;
+
+  function payload(){
+    var req=$('f-req').value||'Unknown', area=$('f-area').value,
+        proc=$('f-proc').value||'Unspecified process', prio=$('f-prio').value;
+    return {req:req,area:area,proc:proc,prio:prio,
+      json:{
+        title:'[Intake] '+area+' \u2014 '+proc,
+        body:'Requester: '+req+'\nArea: '+area+'\nProcess: '+proc+'\nPriority: '+prio,
+        labels:['status:intake','priority:'+slug(prio),'area:'+slug(area)]
+      }};
+  }
+  function issueHTML(p,num){
+    return '<div class="ih"><span class="istate">\u25CF Open \u00B7 #'+num+'</span><h3>'+esc(p.json.title)+'</h3>'+
+      '<div class="imeta">opened just now \u00B7 via intake form \u00B7 by automation-bot</div></div>'+
+      '<dl class="ibody"><dt>Requester</dt><dd>'+esc(p.req)+'</dd><dt>Business area</dt><dd>'+esc(p.area)+'</dd>'+
+      '<dt>Process</dt><dd>'+esc(p.proc)+'</dd><dt>Priority</dt><dd>'+esc(p.prio)+'</dd></dl>'+
+      '<div class="ilabels"><span class="ilbl intake">status:intake</span>'+
+      '<span class="ilbl prio">priority:'+slug(p.prio)+'</span>'+
+      '<span class="ilbl area">area:'+slug(p.area)+'</span></div>';
+  }
+
+  var runMsg=['composing JSON payload\u2026','emailing payload\u2026','reading mailbox\u2026','posting to GitHub\u2026','rendering\u2026'];
+  function onDone(i,p,num){
+    var st=els[i].querySelector('.pstatus');
+    if(i===0) st.textContent='trigger \u2192 get details \u2192 compose payload';
+    else if(i===1){ st.textContent='delivered to robot mailbox';
+      var jb=$('jsonbox'); jb.textContent=JSON.stringify(p.json,null,2); jb.classList.add('show'); }
+    else if(i===2) st.textContent='dequeued \u00B7 building request';
+    else if(i===3) st.textContent='POST /repos/\u2026/issues \u2192 201 Created';
+    else if(i===4){ st.textContent='opened in the triage column';
+      var ic=$('issueCard'); ic.innerHTML=issueHTML(p,num); ic.hidden=false; }
+  }
+
+  function run(){
+    if(running) return; running=true;
+    var btn=$('runbtn'); btn.disabled=true; btn.textContent='Running\u2026';
+    // reset
+    els.forEach(function(el){el.classList.remove('active','done');el.querySelector('.pstatus').textContent='waiting';});
+    var jb=$('jsonbox'); jb.classList.remove('show'); jb.textContent='';
+    var ic=$('issueCard'); ic.hidden=true; ic.innerHTML='';
+
+    var p=payload(); n++; var num=n;
+    var activeMs=reduce?40:800, gapMs=reduce?10:140, i=0;
+    function step(){
+      if(i>=els.length){ running=false; btn.disabled=false; btn.textContent='Run again'; return; }
+      var el=els[i];
+      el.classList.add('active');
+      el.querySelector('.pstatus').textContent=runMsg[i];
+      setTimeout(function(){
+        el.classList.remove('active'); el.classList.add('done');
+        onDone(i,p,num);
+        i++; setTimeout(step,gapMs);
+      },activeMs);
+    }
+    step();
+  }
+  $('runbtn').addEventListener('click',run);
+})();
+</script>
+</body>
+</html>
